@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.5.1 of the xml parser.
+ * This is version 1.5.2 of the xml parser.
  **/
 
 #ifndef XML_PARSER_H
@@ -36,7 +36,7 @@ public:
 	virtual void ElementEnd(const std::string & TagName);
 	virtual void Text(const std::string & Text);
 private:
-	std::istream & m_InputStream;
+	std::istream & _InputStream;
 };
 
 #endif

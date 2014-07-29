@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.5.1 of the xml parser.
+ * This is version 1.5.2 of the xml parser.
  **/
 
 #include <iostream>
@@ -25,7 +25,7 @@
 #include "xml_parser.h"
 
 XMLParser::XMLParser(std::istream & InputStream) :
-	m_InputStream(InputStream)
+	_InputStream(InputStream)
 {
 }
 
@@ -46,7 +46,7 @@ void XMLParser::Parse(void)
 	bool IsEndTag(false);
 	bool IsEmptyElement(false);
 	
-	while(m_InputStream.get(Char))
+	while(_InputStream.get(Char))
 	{
 		switch(Char)
 		{

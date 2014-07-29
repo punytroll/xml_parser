@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.5.1 of the xml parser.
+ * This is version 1.5.2 of the xml parser.
  **/
 
 #include <assert.h>
@@ -35,26 +35,26 @@ public:
 	{
 	}
 	
-	std::string m_Result;
+	std::string _Result;
 private:
 	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes)
 	{
-		m_Result += "[+" + TagName;
+		_Result += "[+" + TagName;
 		for(std::map< std::string, std::string >::const_iterator Iterator = Attributes.begin(); Iterator != Attributes.end(); ++Iterator)
 		{
-			m_Result += '|' + Iterator->first + '=' + Iterator->second;
+			_Result += '|' + Iterator->first + '=' + Iterator->second;
 		}
-		m_Result += ']';
+		_Result += ']';
 	}
 	
 	virtual void ElementEnd(const std::string & TagName)
 	{
-		m_Result += "[-" + TagName + ']';
+		_Result += "[-" + TagName + ']';
 	}
 	
 	virtual void Text(const std::string & Text)
 	{
-		m_Result += '(' + Text + ')';
+		_Result += '(' + Text + ')';
 	}
 };
 
@@ -65,7 +65,7 @@ int main(int argc, char ** argv)
 		TestParser TestParser(XMLStream);
 		
 		TestParser.Parse();
-		assert(TestParser.m_Result == "[+r][+h|a=v](H)[+s|t=f][-s]( ! )[-h][-r]");
+		assert(TestParser._Result == "[+r][+h|a=v](H)[+s|t=f][-s]( ! )[-h][-r]");
 	}
 	{
 		std::stringstream XMLStream(
@@ -76,6 +76,6 @@ int main(int argc, char ** argv)
 		TestParser TestParser(XMLStream);
 		
 		TestParser.Parse();
-		assert(TestParser.m_Result == "[+call|function=insert](\t)[+parameter|name=identifier](127.0.0.1)[-parameter](\t)[+parameter|name=title](localhost)[-parameter][-call]");
+		assert(TestParser._Result == "[+call|function=insert](\t)[+parameter|name=identifier](127.0.0.1)[-parameter](\t)[+parameter|name=title](localhost)[-parameter][-call]");
 	}
 }
