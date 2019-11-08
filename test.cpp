@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.5.3 of the xml parser.
+ * This is version 1.6 of the xml parser.
  **/
 
 #include <assert.h>
@@ -35,7 +35,10 @@ public:
 	{
 	}
 	
-	std::string _Result;
+	const std::string & GetResult(void) const
+	{
+		return _Result;
+	}
 private:
 	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes)
 	{
@@ -56,26 +59,84 @@ private:
 	{
 		_Result += '(' + Text + ')';
 	}
+	
+	std::string _Result;
 };
 
 int main(int argc, char ** argv)
 {
 	{
-		std::stringstream XMLStream("<r><h a=\"v\">H<s t=\"f\"/> ! </h></r>");
-		TestParser TestParser(XMLStream);
+		std::stringstream XMLStream{"<r><h a=\"v\">H<s t=\"f\"/> ! </h></r>"};
+		TestParser TestParser{XMLStream};
 		
 		TestParser.Parse();
-		assert(TestParser._Result == "[+r][+h|a=v](H)[+s|t=f][-s]( ! )[-h][-r]");
+		assert(TestParser.GetResult() == "[+r][+h|a=v](H)[+s|t=f][-s]( ! )[-h][-r]");
 	}
 	{
-		std::stringstream XMLStream(
+		std::stringstream XMLStream{
 "<call function=\"insert\">\
 	<parameter name=\"identifier\">127.0.0.1</parameter>\
 	<parameter name=\"title\">localhost</parameter>\
-</call>");
-		TestParser TestParser(XMLStream);
+</call>"};
+		TestParser TestParser{XMLStream};
 		
 		TestParser.Parse();
-		assert(TestParser._Result == "[+call|function=insert](\t)[+parameter|name=identifier](127.0.0.1)[-parameter](\t)[+parameter|name=title](localhost)[-parameter][-call]");
+		assert(TestParser.GetResult() == "[+call|function=insert](\t)[+parameter|name=identifier](127.0.0.1)[-parameter](\t)[+parameter|name=title](localhost)[-parameter][-call]");
+	}
+	{
+		std::stringstream XMLStream{"<root>hallo</root>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root](hallo)[-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root>&amp;</root>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root](&)[-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root>&lt;</root>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root](<)[-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root>&gt;</root>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root](>)[-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root att=\"h&amp;m\"/>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root|att=h&m][-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root att=\"h&quot;m\"/>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root|att=h\"m][-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root att=\"h&apos;m\"/>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root|att=h'm][-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root att=\"h&apos;&amp;m\"/>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root|att=h'&m][-root]");
 	}
 }

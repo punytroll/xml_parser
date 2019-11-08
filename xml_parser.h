@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.5.3 of the xml parser.
+ * This is version 1.6 of the xml parser.
  **/
 
 #ifndef XML_PARSER_H
