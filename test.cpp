@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007  Hagen Möbius
+ * Copyright (C) 2007-2019  Hagen Möbius
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.6 of the xml parser.
+ * This is version 1.6.1 of the xml parser.
  **/
 
 #include <assert.h>
@@ -138,5 +138,12 @@ int main(int argc, char ** argv)
 		
 		TestParser.Parse();
 		assert(TestParser.GetResult() == "[+root|att=h'&m][-root]");
+	}
+	{
+		std::stringstream XMLStream{"<root>This is some \"text\".</root>"};
+		TestParser TestParser{XMLStream};
+		
+		TestParser.Parse();
+		assert(TestParser.GetResult() == "[+root](This is some \"text\".)[-root]");
 	}
 }

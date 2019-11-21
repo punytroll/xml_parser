@@ -1,7 +1,13 @@
 CXXFLAGS = -Wall -Werror -O0 -g -std=c++17
 
+default: all
+
+all: test
+
 check: test
-	./test
+	@echo "Running test suite ..."
+	@echo
+	@./test && echo "... all tests successfull."
 
 clean:
 	$(RM) test
