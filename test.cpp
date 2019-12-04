@@ -80,12 +80,15 @@ std::string TestParse(const std::string & XMLString)
 
 void Test(const std::string XMLString, const std::string & TestString)
 {
+	//~ std::cout << ">>>>" << std::endl;
+	
 	auto ResultString{TestParse(XMLString)};
 	
 	if(ResultString != TestString)
 	{
 		throw std::runtime_error{"The XML string \"" + XMLString + "\" did not evaluate to the test string:\n        Expected result: \"" + TestString + "\"\n            Real result: \"" + ResultString + "\""};
 	}
+	//~ std::cout << "<<<<" << std::endl;
 }
 
 int main(int argc, char ** argv)
