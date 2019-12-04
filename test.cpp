@@ -94,6 +94,7 @@ void Test(const std::string XMLString, const std::string & TestString)
 int main(int argc, char ** argv)
 {
 	Test("<root/>", "[+root][-root]");
+	Test("<root />", "[+root][-root]");
 	Test("<root></root>", "[+root][-root]");
 	Test("<root>text</root>", "[+root](text)[-root]");
 	Test("<root>=</root>", "[+root](=)[-root]");
@@ -139,4 +140,6 @@ int main(int argc, char ** argv)
 	Test("<root att=\"h&apos;m\"/>", "[+root|att=h'm][-root]");
 	Test("<root att=\"h&apos;&amp;m\"/>", "[+root|att=h'&m][-root]");
 	Test("<root-hyphen/>", "[+root-hyphen][-root-hyphen]");
+	Test("<root-hyphen></root-hyphen>", "[+root-hyphen][-root-hyphen]");
+	Test("<root attribute-hyphen=\"\"/>", "[+root|attribute-hyphen=][-root]");
 }
