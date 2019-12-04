@@ -5,7 +5,9 @@ default: all
 all: test
 
 check: test
-	./test
+	@echo "Running test suite ..."
+	@echo
+	@./test && echo "... all tests successfull."
 
 clean:
 	$(RM) test
