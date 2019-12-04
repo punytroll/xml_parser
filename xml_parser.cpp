@@ -24,33 +24,37 @@
 
 #include "xml_parser.h"
 
-void _ForwardEntityToBuffer(std::string & Entity, std::string & Buffer)
+void Forward(std::string && From, std::string & To)
+{
+	To += From;
+	From.erase();
+}
+
+void ForwardEntityTo(std::string & Entity, std::string & To)
 {
 	if(Entity == "amp")
 	{
-		Buffer += '&';
+		Forward("&", To);
 	}
 	else if(Entity == "gt")
 	{
-		Buffer += '>';
+		Forward(">", To);
 	}
 	else if(Entity == "lt")
 	{
-		Buffer += '<';
+		Forward("<", To);
 	}
 	else if(Entity == "apos")
 	{
-		Buffer += '\'';
+		Forward("'", To);
 	}
 	else if(Entity == "quot")
 	{
-		Buffer += '"';
+		Forward("\"", To);
 	}
 	else
 	{
-		Buffer += '&';
-		Buffer += Entity;
-		Buffer += ';';
+		Forward("&" + Entity + ";", To);
 	}
 	Entity.erase();
 }
@@ -87,8 +91,10 @@ XMLParser::~XMLParser(void)
 void XMLParser::Parse(void)
 {
 	std::map< std::string, std::string > Attributes;
-	std::string TagName;
 	std::string AttributeName;
+	std::string Comment;
+	std::string TagName;
+	std::string Text;
 	std::string Buffer;
 	std::string Entity;
 	char Char;
@@ -97,7 +103,7 @@ void XMLParser::Parse(void)
 	
 	while(_InputStream.get(Char))
 	{
-		//~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (InAttributeValue=" << InAttributeValue << "; TagName=\"" << TagName << "\"; AttributeName=\"" << AttributeName << "\"; Entity=\"" << Entity << "\"; Buffer=\"" << Buffer << "\")" << std::endl;
+		std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (InAttributeValue=" << InAttributeValue << "; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; Entity=\"" << Entity << "\"; Buffer=\"" << Buffer << "\")" << std::endl;
 		switch(Char)
 		{
 		case '\n':
@@ -106,16 +112,16 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				else if(ParsingStage == 8)
@@ -124,11 +130,6 @@ void XMLParser::Parse(void)
 					{
 						Buffer += Char;
 					}
-				}
-				else if(ParsingStage == 11)
-				{
-					TagName = Buffer;
-					Buffer.erase();
 				}
 				else if(ParsingStage == 12)
 				{
@@ -146,21 +147,17 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
-				}
-				else if(ParsingStage == 8)
-				{
-					Buffer += Char;
 				}
 				else if(ParsingStage == 13)
 				{
@@ -173,16 +170,16 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				else if(ParsingStage == 8)
@@ -206,21 +203,21 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					if(Buffer.empty() == false)
+					if(Text.empty() == false)
 					{
-						Text(Buffer);
-						Buffer.erase();
+						this->Text(Text);
+						Text.erase();
 					}
 					ParsingStage = 1;
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				
@@ -230,19 +227,19 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				else if(ParsingStage == 6)
 				{
 					ParsingStage = 0;
-					Comment(Buffer);
-					Buffer.erase();
+					this->Comment(Comment);
+					Comment.erase();
 				}
 				else if(ParsingStage == 8)
 				{
@@ -285,7 +282,7 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 1)
 				{
@@ -293,12 +290,12 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				else if(ParsingStage == 8)
@@ -316,11 +313,6 @@ void XMLParser::Parse(void)
 				{
 					ParsingStage = 10;
 				}
-				else if(ParsingStage == 14)
-				{
-					TagName = Buffer;
-					Buffer.erase();
-				}
 				else if(ParsingStage == 15)
 				{
 					ParsingStage = 10;
@@ -336,12 +328,12 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				else if(ParsingStage == 8)
@@ -355,26 +347,26 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				else if(ParsingStage == 7)
 				{
-					_ForwardEntityToBuffer(Entity, Buffer);
+					ForwardEntityTo(Entity, Text);
 					ParsingStage = 0;
 				}
 				else if(ParsingStage == 9)
 				{
-					_ForwardEntityToBuffer(Entity, Buffer);
+					ForwardEntityTo(Entity, Buffer);
 					ParsingStage = 8;
 				}
 				
@@ -384,7 +376,7 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 1)
 				{
@@ -392,12 +384,12 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += '-';
-					Buffer += Char;
+					Comment += '-';
+					Comment += Char;
 					ParsingStage = 4;
 				}
 				
@@ -407,7 +399,7 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 2)
 				{
@@ -424,14 +416,6 @@ void XMLParser::Parse(void)
 				else if(ParsingStage == 5)
 				{
 					ParsingStage = 6;
-				}
-				else if(ParsingStage == 8)
-				{
-					Buffer += Char;
-				}
-				else if(ParsingStage == 11)
-				{
-					Buffer += Char;
 				}
 				else if(ParsingStage == 12)
 				{
@@ -452,7 +436,7 @@ void XMLParser::Parse(void)
 			{
 				if(ParsingStage == 0)
 				{
-					Buffer += Char;
+					Text += Char;
 				}
 				else if(ParsingStage == 1)
 				{
@@ -461,12 +445,12 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 4)
 				{
-					Buffer += Char;
+					Comment += Char;
 				}
 				else if(ParsingStage == 5)
 				{
-					Buffer += "-";
-					Buffer += Char;
+					Comment += "-";
+					Comment += Char;
 				}
 				else if(ParsingStage == 7)
 				{
