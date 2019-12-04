@@ -109,6 +109,13 @@ int main(int argc, char ** argv)
 	Test("<root>---</root>", "[+root](---)[-root]");
 	Test("<root>!--</root>", "[+root](!--)[-root]");
 	Test("<root attribute=\"value\"/>", "[+root|attribute=value][-root]");
+	Test("<root attribute1=\"value1\" attribute2=\"value2\"/>", "[+root|attribute1=value1|attribute2=value2][-root]");
+	Test("<root attribute=\"  value\"/>", "[+root|attribute=  value][-root]");
+	Test("<root attribute=\"value  \"/>", "[+root|attribute=value  ][-root]");
+	Test("<root attribute=\"va  lue\"/>", "[+root|attribute=va  lue][-root]");
+	Test("<root attribute =\"value\"/>", "[+root|attribute=value][-root]");
+	Test("<root attribute= \"value\"/>", "[+root|attribute=value][-root]");
+	Test("<root attribute = \"value\"/>", "[+root|attribute=value][-root]");
 	Test("<root attribute=\"value\"></root>", "[+root|attribute=value][-root]");
 	Test("<root attribute=\"value\">text</root>", "[+root|attribute=value](text)[-root]");
 	Test("<root><!-- Comment --></root>", "[+root]{ Comment }[-root]");

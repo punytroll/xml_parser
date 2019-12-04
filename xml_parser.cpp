@@ -77,6 +77,10 @@ void ForwardEntityTo(std::string & Entity, std::string & To)
  * - 13 ->  when inside an attribute identifier in an opening or self-closing tag
  * - 14 ->  when inside a closing tag identifier
  * - 15 ->  when the tag identifier of an opening or self-closing tag is done
+ * - 16 ->  when a whitespace is read after an attribute identifier
+ * - 17 ->  when '=' is read after an attribute identifier
+ * - 18 ->  when a whitespace is read after a '=' for an attribute
+ * - 19 ->  when inside an attribute value
  **/
 
 XMLParser::XMLParser(std::istream & InputStream) :
@@ -92,18 +96,17 @@ void XMLParser::Parse(void)
 {
 	std::map< std::string, std::string > Attributes;
 	std::string AttributeName;
+	std::string AttributeValue;
 	std::string Comment;
 	std::string TagName;
 	std::string Text;
-	std::string Buffer;
 	std::string Entity;
 	char Char;
-	auto InAttributeValue{false};
 	auto ParsingStage{0u};
 	
 	while(_InputStream.get(Char))
 	{
-		//~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (InAttributeValue=" << InAttributeValue << "; Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; Entity=\"" << Entity << "\"; Buffer=\"" << Buffer << "\")" << std::endl;
+		//~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\")" << std::endl;
 		switch(Char)
 		{
 		case '\n':
@@ -124,21 +127,21 @@ void XMLParser::Parse(void)
 					Comment += Char;
 					ParsingStage = 4;
 				}
-				else if(ParsingStage == 8)
-				{
-					if(InAttributeValue == true)
-					{
-						Buffer += Char;
-					}
-				}
 				else if(ParsingStage == 12)
 				{
 					ParsingStage = 15;
 				}
 				else if(ParsingStage == 13)
 				{
-					AttributeName = Buffer;
-					ParsingStage = 8;
+					ParsingStage = 16;
+				}
+				else if(ParsingStage == 17)
+				{
+					ParsingStage = 18;
+				}
+				else if(ParsingStage == 19)
+				{
+					AttributeValue += Char;
 				}
 				
 				break;
@@ -161,7 +164,11 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 13)
 				{
-					ParsingStage = 8;
+					ParsingStage = 17;
+				}
+				else if(ParsingStage == 16)
+				{
+					ParsingStage = 17;
 				}
 				
 				break;
@@ -182,19 +189,20 @@ void XMLParser::Parse(void)
 					Comment += Char;
 					ParsingStage = 4;
 				}
-				else if(ParsingStage == 8)
+				else if(ParsingStage == 17)
 				{
-					if(InAttributeValue == false)
-					{
-						InAttributeValue = true;
-					}
-					else
-					{
-						InAttributeValue = false;
-						Attributes[AttributeName] = Buffer;
-						AttributeName.erase();
-						Buffer.erase();
-					}
+					ParsingStage = 19;
+				}
+				else if(ParsingStage == 18)
+				{
+					ParsingStage = 19;
+				}
+				else if(ParsingStage == 19)
+				{
+					Attributes[AttributeName] = AttributeValue;
+					AttributeName.erase();
+					AttributeValue.erase();
+					ParsingStage = 8;
 				}
 				
 				break;
@@ -300,14 +308,7 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 8)
 				{
-					if(InAttributeValue == false)
-					{
-						ParsingStage = 10;
-					}
-					else
-					{
-						Buffer += Char;
-					}
+					ParsingStage = 10;
 				}
 				else if(ParsingStage == 12)
 				{
@@ -316,6 +317,10 @@ void XMLParser::Parse(void)
 				else if(ParsingStage == 15)
 				{
 					ParsingStage = 10;
+				}
+				else if(ParsingStage == 19)
+				{
+					AttributeValue += Char;
 				}
 				
 				break;
@@ -336,7 +341,7 @@ void XMLParser::Parse(void)
 					Comment += Char;
 					ParsingStage = 4;
 				}
-				else if(ParsingStage == 8)
+				else if(ParsingStage == 19)
 				{
 					ParsingStage = 9;
 				}
@@ -366,8 +371,8 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 9)
 				{
-					ForwardEntityTo(Entity, Buffer);
-					ParsingStage = 8;
+					ForwardEntityTo(Entity, AttributeValue);
+					ParsingStage = 19;
 				}
 				
 				break;
@@ -458,11 +463,8 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 8)
 				{
-					if(InAttributeValue == false)
-					{
-						ParsingStage = 12;
-					}
-					Buffer += Char;
+					AttributeName += Char;
+					ParsingStage = 13;
 				}
 				else if(ParsingStage == 9)
 				{
@@ -489,6 +491,10 @@ void XMLParser::Parse(void)
 				{
 					AttributeName += Char;
 					ParsingStage = 13;
+				}
+				else if(ParsingStage == 19)
+				{
+					AttributeValue += Char;
 				}
 				
 				break;
