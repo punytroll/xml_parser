@@ -138,4 +138,5 @@ int main(int argc, char ** argv)
 	Test("<root att=\"h&quot;m\"/>", "[+root|att=h\"m][-root]");
 	Test("<root att=\"h&apos;m\"/>", "[+root|att=h'm][-root]");
 	Test("<root att=\"h&apos;&amp;m\"/>", "[+root|att=h'&m][-root]");
+	Test("<root-hyphen/>", "[+root-hyphen][-root-hyphen]");
 }

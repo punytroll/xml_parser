@@ -68,6 +68,7 @@ void _ForwardEntityToBuffer(std::string & Entity, std::string & Buffer)
  * - 8  ->  when '<' was read but not continued by '!', this is a tag
  * - 9  ->  when '&' is read in an attribute value
  * - 10 ->  when '/' is read in a tag but not after the opening '<', a self-closing tag
+ * - 11 ->  when '</' is read, a closing tag
  **/
 
 XMLParser::XMLParser(std::istream & InputStream) :
@@ -89,12 +90,11 @@ void XMLParser::Parse(void)
 	char Char;
 	auto InAttributeValue{false};
 	auto InIdentifier{false};
-	auto IsEndTag{false};
 	auto ParsingStage{0u};
 	
 	while(_InputStream.get(Char))
 	{
-		//~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (InIdentifier=" << InIdentifier << "; InAttributeValue=" << InAttributeValue << "; IsEndTag=" << IsEndTag << "; IsEmptyElement=" << IsEmptyElement << "; TagName=\"" << TagName << "\"; AttributeName=\"" << AttributeName << "\"; Entity=\"" << Entity << "\"; Buffer=\"" << Buffer << "\")" << std::endl;
+		//~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (InIdentifier=" << InIdentifier << "; InAttributeValue=" << InAttributeValue << "; TagName=\"" << TagName << "\"; AttributeName=\"" << AttributeName << "\"; Entity=\"" << Entity << "\"; Buffer=\"" << Buffer << "\")" << std::endl;
 		switch(Char)
 		{
 		case '\n':
@@ -136,6 +136,15 @@ void XMLParser::Parse(void)
 							}
 							Buffer.erase();
 						}
+					}
+				}
+				else if(ParsingStage == 11)
+				{
+					if(InIdentifier == true)
+					{
+						InIdentifier = false;
+						TagName = Buffer;
+						Buffer.erase();
 					}
 				}
 				
@@ -255,18 +264,9 @@ void XMLParser::Parse(void)
 						InIdentifier = false;
 						Buffer.erase();
 					}
-					if(IsEndTag == true)
-					{
-						ElementEnd(TagName);
-						TagName.erase();
-						IsEndTag = false;
-					}
-					else
-					{
-						ElementStart(TagName, Attributes);
-						TagName.erase();
-						Attributes.clear();
-					}
+					ElementStart(TagName, Attributes);
+					TagName.erase();
+					Attributes.clear();
 					ParsingStage = 0;
 				}
 				else if(ParsingStage == 10)
@@ -275,6 +275,18 @@ void XMLParser::Parse(void)
 					ElementEnd(TagName);
 					TagName.erase();
 					Attributes.clear();
+					ParsingStage = 0;
+				}
+				else if(ParsingStage == 11)
+				{
+					if(InIdentifier == true)
+					{
+						TagName = Buffer;
+						InIdentifier = false;
+						Buffer.erase();
+					}
+					ElementEnd(TagName);
+					TagName.erase();
 					ParsingStage = 0;
 				}
 				
@@ -288,8 +300,7 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 1)
 				{
-					IsEndTag = true;
-					ParsingStage = 8;
+					ParsingStage = 11;
 				}
 				else if(ParsingStage == 4)
 				{
@@ -418,6 +429,14 @@ void XMLParser::Parse(void)
 				{
 					ParsingStage = 6;
 				}
+				else if(ParsingStage == 8)
+				{
+					Buffer += Char;
+				}
+				else if(ParsingStage == 11)
+				{
+					Buffer += Char;
+				}
 				
 				break;
 			}
@@ -457,6 +476,11 @@ void XMLParser::Parse(void)
 				else if(ParsingStage == 9)
 				{
 					Entity += Char;
+				}
+				else if(ParsingStage == 11)
+				{
+					InIdentifier = true;
+					Buffer += Char;
 				}
 				
 				break;
