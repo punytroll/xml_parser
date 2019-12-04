@@ -103,7 +103,7 @@ void XMLParser::Parse(void)
 	
 	while(_InputStream.get(Char))
 	{
-		std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (InAttributeValue=" << InAttributeValue << "; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; Entity=\"" << Entity << "\"; Buffer=\"" << Buffer << "\")" << std::endl;
+		//~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (InAttributeValue=" << InAttributeValue << "; Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; Entity=\"" << Entity << "\"; Buffer=\"" << Buffer << "\")" << std::endl;
 		switch(Char)
 		{
 		case '\n':
