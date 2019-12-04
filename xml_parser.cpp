@@ -58,15 +58,16 @@ void _ForwardEntityToBuffer(std::string & Entity, std::string & Buffer)
 /**
  * Parsing stages:
  * - 0  ->  document scope
- * - 1  ->  when '<' is read in the document scope (also for tags)
- * - 2  ->  when '<!' is read
- * - 3  ->  when '<!-' is read
- * - 4  ->  when '<!--' is read, this is a valid comment opener
- * - 5  ->  when '<!--' .. '-' is read
+ * - 1  ->  when '<' is read in the document scope
+ * - 2  ->  when '<!' is read, preparing to open a comment
+ * - 3  ->  when '<!-' is read, preparing to open a comment
+ * - 4  ->  when '<!--' is read, comment opened
+ * - 5  ->  when '<!--' .. '-' is read, preparing to close a comment
  * - 6  ->  when '<!--' .. '--' is read, comment closing, '>' expected next, which turns around to stage 0
  * - 7  ->  when '&' is read in the document scope
  * - 8  ->  when '<' was read but not continued by '!', this is a tag
  * - 9  ->  when '&' is read in an attribute value
+ * - 10 ->  when '/' is read in a tag but not after the opening '<', a self-closing tag
  **/
 
 XMLParser::XMLParser(std::istream & InputStream) :
@@ -89,7 +90,6 @@ void XMLParser::Parse(void)
 	auto InAttributeValue{false};
 	auto InIdentifier{false};
 	auto IsEndTag{false};
-	auto IsEmptyElement{false};
 	auto ParsingStage{0u};
 	
 	while(_InputStream.get(Char))
@@ -264,14 +264,17 @@ void XMLParser::Parse(void)
 					else
 					{
 						ElementStart(TagName, Attributes);
-						if(IsEmptyElement == true)
-						{
-							ElementEnd(TagName);
-							IsEmptyElement = false;
-						}
 						TagName.erase();
 						Attributes.clear();
 					}
+					ParsingStage = 0;
+				}
+				else if(ParsingStage == 10)
+				{
+					ElementStart(TagName, Attributes);
+					ElementEnd(TagName);
+					TagName.erase();
+					Attributes.clear();
 					ParsingStage = 0;
 				}
 				
@@ -308,7 +311,7 @@ void XMLParser::Parse(void)
 							Buffer.erase();
 							InIdentifier = false;
 						}
-						IsEmptyElement = true;
+						ParsingStage = 10;
 					}
 					else
 					{
