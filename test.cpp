@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.6 of the xml parser.
+ * This is version 1.7 of the xml parser.
  **/
 
 #include <assert.h>
@@ -40,7 +40,12 @@ public:
 		return _Result;
 	}
 private:
-	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes)
+	virtual void Comment(const std::string & Comment) override
+	{
+		_Result += "{" + Comment + "}";
+	}
+	
+	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes) override
 	{
 		_Result += "[+" + TagName;
 		for(std::map< std::string, std::string >::const_iterator Iterator = Attributes.begin(); Iterator != Attributes.end(); ++Iterator)
@@ -50,12 +55,12 @@ private:
 		_Result += ']';
 	}
 	
-	virtual void ElementEnd(const std::string & TagName)
+	virtual void ElementEnd(const std::string & TagName) override
 	{
 		_Result += "[-" + TagName + ']';
 	}
 	
-	virtual void Text(const std::string & Text)
+	virtual void Text(const std::string & Text) override
 	{
 		_Result += '(' + Text + ')';
 	}
@@ -63,80 +68,71 @@ private:
 	std::string _Result;
 };
 
+std::string TestParse(const std::string & XMLString)
+{
+	std::stringstream XMLStream{XMLString};
+	TestParser Parser{XMLStream};
+	
+	Parser.Parse();
+	
+	return Parser.GetResult();
+}
+
+void Test(const std::string XMLString, const std::string & TestString)
+{
+	auto ResultString{TestParse(XMLString)};
+	
+	if(ResultString != TestString)
+	{
+		throw std::runtime_error{"The XML string \"" + XMLString + "\" did not evaluate to the test string:\n        Expected result: \"" + TestString + "\"\n            Real result: \"" + ResultString + "\""};
+	}
+}
+
 int main(int argc, char ** argv)
 {
-	{
-		std::stringstream XMLStream{"<r><h a=\"v\">H<s t=\"f\"/> ! </h></r>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+r][+h|a=v](H)[+s|t=f][-s]( ! )[-h][-r]");
-	}
-	{
-		std::stringstream XMLStream{
-"<call function=\"insert\">\
+	Test("<root/>", "[+root][-root]");
+	Test("<root></root>", "[+root][-root]");
+	Test("<root>text</root>", "[+root](text)[-root]");
+	Test("<root>=</root>", "[+root](=)[-root]");
+	Test("<root>/</root>", "[+root](/)[-root]");
+	Test("<root>&amp;</root>", "[+root](&)[-root]");
+	Test("<root>&lt;</root>", "[+root](<)[-root]");
+	Test("<root>&gt;</root>", "[+root](>)[-root]");
+	Test("<root>!</root>", "[+root](!)[-root]");
+	Test("<root>-</root>", "[+root](-)[-root]");
+	Test("<root>;</root>", "[+root](;)[-root]");
+	Test("<root>--</root>", "[+root](--)[-root]");
+	Test("<root>---</root>", "[+root](---)[-root]");
+	Test("<root>!--</root>", "[+root](!--)[-root]");
+	Test("<root attribute=\"value\"/>", "[+root|attribute=value][-root]");
+	Test("<root attribute=\"value\"></root>", "[+root|attribute=value][-root]");
+	Test("<root attribute=\"value\">text</root>", "[+root|attribute=value](text)[-root]");
+	Test("<root><!-- Comment --></root>", "[+root]{ Comment }[-root]");
+	Test("<root><!-- - --></root>", "[+root]{ - }[-root]");
+	Test("<root><!-- < --></root>", "[+root]{ < }[-root]");
+	Test("<root><!-- > --></root>", "[+root]{ > }[-root]");
+	Test("<root><!-- ; --></root>", "[+root]{ ; }[-root]");
+	Test("<root><!-- ! --></root>", "[+root]{ ! }[-root]");
+	Test("<root><!-- = --></root>", "[+root]{ = }[-root]");
+	Test("<root><!-- & --></root>", "[+root]{ & }[-root]");
+	Test("<root><!-- \" --></root>", "[+root]{ \" }[-root]");
+	Test("<root><!-- / --></root>", "[+root]{ / }[-root]");
+	Test("<root><!-- -< --></root>", "[+root]{ -< }[-root]");
+	Test("<root><!-- -> --></root>", "[+root]{ -> }[-root]");
+	Test("<root><!-- -! --></root>", "[+root]{ -! }[-root]");
+	Test("<root><!-- -; --></root>", "[+root]{ -; }[-root]");
+	Test("<root><!-- -& --></root>", "[+root]{ -& }[-root]");
+	Test("<root><!-- -= --></root>", "[+root]{ -= }[-root]");
+	Test("<root><!-- -\" --></root>", "[+root]{ -\" }[-root]");
+	Test("<root><!-- -/ --></root>", "[+root]{ -/ }[-root]");
+	Test("<root><!-- \"Hallo Test\" - This -! is -\" a -< conclusive -> test -= of <> special /= characters!</root>&amp;-; --></root>", "[+root]{ \"Hallo Test\" - This -! is -\" a -< conclusive -> test -= of <> special /= characters!</root>&amp;-; }[-root]");
+	Test("<r><h a=\"v\">H<s t=\"f\"/> ! </h></r>", "[+r][+h|a=v](H)[+s|t=f][-s]( ! )[-h][-r]");
+	Test("<call function=\"insert\">\
 	<parameter name=\"identifier\">127.0.0.1</parameter>\
 	<parameter name=\"title\">localhost</parameter>\
-</call>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+call|function=insert](\t)[+parameter|name=identifier](127.0.0.1)[-parameter](\t)[+parameter|name=title](localhost)[-parameter][-call]");
-	}
-	{
-		std::stringstream XMLStream{"<root>hallo</root>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root](hallo)[-root]");
-	}
-	{
-		std::stringstream XMLStream{"<root>&amp;</root>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root](&)[-root]");
-	}
-	{
-		std::stringstream XMLStream{"<root>&lt;</root>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root](<)[-root]");
-	}
-	{
-		std::stringstream XMLStream{"<root>&gt;</root>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root](>)[-root]");
-	}
-	{
-		std::stringstream XMLStream{"<root att=\"h&amp;m\"/>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root|att=h&m][-root]");
-	}
-	{
-		std::stringstream XMLStream{"<root att=\"h&quot;m\"/>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root|att=h\"m][-root]");
-	}
-	{
-		std::stringstream XMLStream{"<root att=\"h&apos;m\"/>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root|att=h'm][-root]");
-	}
-	{
-		std::stringstream XMLStream{"<root att=\"h&apos;&amp;m\"/>"};
-		TestParser TestParser{XMLStream};
-		
-		TestParser.Parse();
-		assert(TestParser.GetResult() == "[+root|att=h'&m][-root]");
-	}
+</call>", "[+call|function=insert](\t)[+parameter|name=identifier](127.0.0.1)[-parameter](\t)[+parameter|name=title](localhost)[-parameter][-call]");
+	Test("<root att=\"h&amp;m\"/>", "[+root|att=h&m][-root]");
+	Test("<root att=\"h&quot;m\"/>", "[+root|att=h\"m][-root]");
+	Test("<root att=\"h&apos;m\"/>", "[+root|att=h'm][-root]");
+	Test("<root att=\"h&apos;&amp;m\"/>", "[+root|att=h'&m][-root]");
 }

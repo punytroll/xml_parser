@@ -1,5 +1,9 @@
 CXXFLAGS = -Wall -Werror -O0 -g -std=c++17
 
+default: all
+
+all: test
+
 check: test
 	./test
 
