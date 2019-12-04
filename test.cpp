@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.7 of the xml parser.
+ * This is version 1.7.1 of the xml parser.
  **/
 
 #include <assert.h>

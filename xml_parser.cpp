@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.7 of the xml parser.
+ * This is version 1.7.1 of the xml parser.
  **/
 
 #include <iostream>
@@ -25,14 +25,15 @@
 #include "xml_parser.h"
 
 /**
- * Comment stages:
- * - 0  ->  not relevant for comment
+ * Parsing stages:
+ * - 0  ->  not relevant for comments or entities
  * - 1  ->  when '<' is read in the document scope (also for tags)
  * - 2  ->  when '<!' is read
  * - 3  ->  when '<!-' is read
  * - 4  ->  when '<!--' is read, this is a valid comment opener
  * - 5  ->  when '<!--' .. '-' is read
  * - 6  ->  when '<!--' .. '--' is read, comment closing, '>' expected next, which turns around to stage 0
+ * - 7  ->  when '&' is read in a place where entities are valid
  **/
 
 XMLParser::XMLParser(std::istream & InputStream) :
@@ -53,12 +54,11 @@ void XMLParser::Parse(void)
 	std::string Entity;
 	char Char;
 	auto InAttributeValue{false};
-	auto InEntity{false};
 	auto InTag{false};
 	auto InIdentifier{false};
 	auto IsEndTag{false};
 	auto IsEmptyElement{false};
-	auto CommentStage{0u};
+	auto ParsingStage{0u};
 	
 	while(_InputStream.get(Char))
 	{
@@ -68,7 +68,7 @@ void XMLParser::Parse(void)
 		case '\t':
 		case ' ':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					if((InTag == false) || (InAttributeValue == true))
 					{
@@ -91,22 +91,22 @@ void XMLParser::Parse(void)
 						}
 					}
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
 				
 				break;
 			}
 		case '=':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					if(InIdentifier == true)
 					{
@@ -119,22 +119,22 @@ void XMLParser::Parse(void)
 						Buffer += Char;
 					}
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
 				
 				break;
 			}
 		case '"':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					if(InAttributeValue == false)
 					{
@@ -147,46 +147,46 @@ void XMLParser::Parse(void)
 						Buffer.erase();
 					}
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
 				
 				break;
 			}
 		case '<':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					if(Buffer.empty() == false)
 					{
 						Text(Buffer);
 						Buffer.erase();
 					}
-					CommentStage = 1;
+					ParsingStage = 1;
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
 				
 				break;
 			}
 		case '>':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					if(InIdentifier == true)
 					{
@@ -213,19 +213,19 @@ void XMLParser::Parse(void)
 					}
 					InTag = false;
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
-				else if(CommentStage == 6)
+				else if(ParsingStage == 6)
 				{
-					CommentStage = 0;
+					ParsingStage = 0;
 					Comment(Buffer);
 					Buffer.erase();
 				}
@@ -234,7 +234,7 @@ void XMLParser::Parse(void)
 			}
 		case '/':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					if((InTag == true) && (InAttributeValue == false))
 					{
@@ -251,171 +251,165 @@ void XMLParser::Parse(void)
 						Buffer += Char;
 					}
 				}
-				else if(CommentStage == 1)
+				else if(ParsingStage == 1)
 				{
 					IsEndTag = true;
-					CommentStage = 0;
+					ParsingStage = 0;
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
 				
 				break;
 			}
 		case '&':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
-					InEntity = true;
+					ParsingStage = 7;
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
 				
 				break;
 			}
 		case ';':
 			{
-				if(CommentStage == 0)
-				{
-					if(InEntity == true)
-					{
-						if(Entity == "amp")
-						{
-							Buffer += '&';
-						}
-						else if(Entity == "gt")
-						{
-							Buffer += '>';
-						}
-						else if(Entity == "lt")
-						{
-							Buffer += '<';
-						}
-						else if(Entity == "apos")
-						{
-							Buffer += '\'';
-						}
-						else if(Entity == "quot")
-						{
-							Buffer += '"';
-						}
-						else
-						{
-							Buffer += '&';
-							Buffer += Entity;
-							Buffer += ';';
-						}
-						Entity = "";
-						InEntity = false;
-					}
-					else
-					{
-						Buffer += Char;
-					}
-				}
-				else if(CommentStage == 4)
+				if(ParsingStage == 0)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 4)
+				{
+					Buffer += Char;
+				}
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
+				}
+				else if(ParsingStage == 7)
+				{
+					if(Entity == "amp")
+					{
+						Buffer += '&';
+					}
+					else if(Entity == "gt")
+					{
+						Buffer += '>';
+					}
+					else if(Entity == "lt")
+					{
+						Buffer += '<';
+					}
+					else if(Entity == "apos")
+					{
+						Buffer += '\'';
+					}
+					else if(Entity == "quot")
+					{
+						Buffer += '"';
+					}
+					else
+					{
+						Buffer += '&';
+						Buffer += Entity;
+						Buffer += ';';
+					}
+					Entity = "";
+					ParsingStage = 0;
 				}
 				
 				break;
 			}
 		case '!':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 1)
+				else if(ParsingStage == 1)
 				{
-					CommentStage = 2;
+					ParsingStage = 2;
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += '-';
 					Buffer += Char;
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
 				
 				break;
 			}
 		case '-':
 			{
-				if(CommentStage == 0)
+				if(ParsingStage == 0)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 2)
+				else if(ParsingStage == 2)
 				{
-					CommentStage = 3;
+					ParsingStage = 3;
 				}
-				else if(CommentStage == 3)
+				else if(ParsingStage == 3)
 				{
-					CommentStage = 4;
+					ParsingStage = 4;
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
-					CommentStage = 5;
+					ParsingStage = 5;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
-					CommentStage = 6;
+					ParsingStage = 6;
 				}
 				
 				break;
 			}
 		default:
 			{
-				if((CommentStage == 0) || (CommentStage == 1))
+				if((ParsingStage == 0) || (ParsingStage == 1))
 				{
 					if(InAttributeValue == false)
 					{
-						CommentStage = 0;
+						ParsingStage = 0;
 						InTag = true;
 						InIdentifier = true;
 					}
-					if(InEntity == true)
-					{
-						Entity += Char;
-					}
-					else
-					{
-						Buffer += Char;
-					}
+					Buffer += Char;
 				}
-				else if(CommentStage == 4)
+				else if(ParsingStage == 4)
 				{
 					Buffer += Char;
 				}
-				else if(CommentStage == 5)
+				else if(ParsingStage == 5)
 				{
 					Buffer += "-";
 					Buffer += Char;
+				}
+				else if(ParsingStage == 7)
+				{
+					Entity += Char;
 				}
 				
 				break;
