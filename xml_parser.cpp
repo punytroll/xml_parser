@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.7.1 of the xml parser.
+ * This is version 1.7.5 of the xml parser.
  **/
 
 #include <iostream>
@@ -433,6 +433,10 @@ void XMLParser::Parse(void)
 				else if(ParsingStage == 14)
 				{
 					TagName += Char;
+				}
+				else if(ParsingStage == 19)
+				{
+					AttributeValue += Char;
 				}
 				
 				break;

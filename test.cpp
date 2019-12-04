@@ -17,7 +17,7 @@
 **/
 
 /**
- * This is version 1.7.1 of the xml parser.
+ * This is version 1.7.5 of the xml parser.
  **/
 
 #include <assert.h>
@@ -118,6 +118,7 @@ int main(int argc, char ** argv)
 	Test("<root attribute = \"value\"/>", "[+root|attribute=value][-root]");
 	Test("<root attribute=\"value\"></root>", "[+root|attribute=value][-root]");
 	Test("<root attribute=\"value\">text</root>", "[+root|attribute=value](text)[-root]");
+	Test("<tag name=\"mime-type\">image/jpg</tag>", "[+tag|name=mime-type](image/jpg)[-tag]");
 	Test("<root><!-- Comment --></root>", "[+root]{ Comment }[-root]");
 	Test("<root><!-- - --></root>", "[+root]{ - }[-root]");
 	Test("<root><!-- < --></root>", "[+root]{ < }[-root]");
