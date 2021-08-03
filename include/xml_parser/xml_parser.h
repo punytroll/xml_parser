@@ -38,7 +38,7 @@ protected:
 	virtual void ElementEnd(const std::string & TagName);
 	virtual void Text(const std::string & Text);
 private:
-	std::istream & _InputStream;
+	std::istream & m_InputStream;
 };
 
 #endif

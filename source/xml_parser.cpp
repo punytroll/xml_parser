@@ -84,7 +84,7 @@ void ForwardEntityTo(std::string & Entity, std::string & To)
  **/
 
 XMLParser::XMLParser(std::istream & InputStream) :
-	_InputStream(InputStream)
+	m_InputStream(InputStream)
 {
 }
 
@@ -104,7 +104,7 @@ void XMLParser::Parse(void)
 	char Char;
 	auto ParsingStage{0u};
 	
-	while(_InputStream.get(Char))
+	while(m_InputStream.get(Char))
 	{
 		//~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\")" << std::endl;
 		switch(Char)

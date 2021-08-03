@@ -36,35 +36,35 @@ public:
 	
 	const std::string & GetResult(void) const
 	{
-		return _Result;
+		return m_Result;
 	}
 private:
 	virtual void Comment(const std::string & Comment) override
 	{
-		_Result += "{" + Comment + "}";
+		m_Result += "{" + Comment + "}";
 	}
 	
 	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes) override
 	{
-		_Result += "[+" + TagName;
+		m_Result += "[+" + TagName;
 		for(std::map< std::string, std::string >::const_iterator Iterator = Attributes.begin(); Iterator != Attributes.end(); ++Iterator)
 		{
-			_Result += '|' + Iterator->first + '=' + Iterator->second;
+			m_Result += '|' + Iterator->first + '=' + Iterator->second;
 		}
-		_Result += ']';
+		m_Result += ']';
 	}
 	
 	virtual void ElementEnd(const std::string & TagName) override
 	{
-		_Result += "[-" + TagName + ']';
+		m_Result += "[-" + TagName + ']';
 	}
 	
 	virtual void Text(const std::string & Text) override
 	{
-		_Result += '(' + Text + ')';
+		m_Result += '(' + Text + ')';
 	}
 	
-	std::string _Result;
+	std::string m_Result;
 };
 
 std::string TestParse(const std::string & XMLString)
