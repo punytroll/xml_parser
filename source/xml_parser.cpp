@@ -127,6 +127,12 @@ void XMLParser::Parse(void)
 					Comment += Char;
 					ParsingStage = 4;
 				}
+				else if(ParsingStage == 6)
+				{
+					Comment += "--";
+					Comment += Char;
+					ParsingStage = 4;
+				}
 				else if(ParsingStage == 12)
 				{
 					ParsingStage = 15;
@@ -422,6 +428,10 @@ void XMLParser::Parse(void)
 				{
 					ParsingStage = 6;
 				}
+				else if(ParsingStage == 6)
+				{
+                    Comment += '-';
+				}
 				else if(ParsingStage == 12)
 				{
 					TagName += Char;
@@ -458,9 +468,16 @@ void XMLParser::Parse(void)
 				}
 				else if(ParsingStage == 5)
 				{
-					Comment += "-";
+					Comment += '-';
 					Comment += Char;
+                    ParsingStage = 4;
 				}
+                else if(ParsingStage == 6)
+                {
+                    Comment += "--";
+                    Comment += Char;
+                    ParsingStage = 4;
+                }
 				else if(ParsingStage == 7)
 				{
 					Entity += Char;

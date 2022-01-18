@@ -149,4 +149,11 @@ int main(int argc, char ** argv)
 	Test("<root-hyphen/>", "[+root-hyphen][-root-hyphen]");
 	Test("<root-hyphen></root-hyphen>", "[+root-hyphen][-root-hyphen]");
 	Test("<root attribute-hyphen=\"\"/>", "[+root|attribute-hyphen=][-root]");
+    Test("<root><!-- - --></root>", "[+root]{ - }[-root]");
+    Test("<root><!-- - - --></root>", "[+root]{ - - }[-root]");
+    Test("<root><!-- - - > --></root>", "[+root]{ - - > }[-root]");
+    Test("<root><!-- -- --></root>", "[+root]{ -- }[-root]");
+    Test("<root><!-- --- --></root>", "[+root]{ --- }[-root]");
+    Test("<root><!-- ---- --></root>", "[+root]{ ---- }[-root]");
+    Test("<root><!-- <t-e-s-t></t-e-s-t> --></root>", "[+root]{ <t-e-s-t></t-e-s-t> }[-root]");
 }
