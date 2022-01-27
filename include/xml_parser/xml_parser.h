@@ -29,16 +29,16 @@
 class XMLParser
 {
 public:
-	XMLParser(std::istream & InputStream);
-	virtual ~XMLParser(void);
-	void Parse(void);
+    XMLParser(std::istream & InputStream);
+    virtual ~XMLParser(void);
+    void Parse(void);
 protected:
-	virtual void Comment(const std::string & Comment);
-	virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes);
-	virtual void ElementEnd(const std::string & TagName);
-	virtual void Text(const std::string & Text);
+    virtual void Comment(const std::string & Comment);
+    virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes);
+    virtual void ElementEnd(const std::string & TagName);
+    virtual void Text(const std::string & Text);
 private:
-	std::istream & m_InputStream;
+    std::istream & m_InputStream;
 };
 
 #endif
