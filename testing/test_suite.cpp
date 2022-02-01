@@ -34,32 +34,32 @@ public:
     {
     }
     
-    const std::string & GetResult(void) const
+    std::string const & GetResult() const
     {
         return m_Result;
     }
 private:
-    virtual void Comment(const std::string & Comment) override
+    auto Comment(std::string const & Comment) -> void override
     {
         m_Result += "{" + Comment + "}";
     }
     
-    virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes) override
+    auto ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes) -> void override
     {
         m_Result += "[+" + TagName;
-        for(std::map< std::string, std::string >::const_iterator Iterator = Attributes.begin(); Iterator != Attributes.end(); ++Iterator)
+        for(auto Iterator = Attributes.begin(); Iterator != Attributes.end(); ++Iterator)
         {
             m_Result += '|' + Iterator->first + '=' + Iterator->second;
         }
         m_Result += ']';
     }
     
-    virtual void ElementEnd(const std::string & TagName) override
+    auto ElementEnd(std::string const & TagName) -> void override
     {
         m_Result += "[-" + TagName + ']';
     }
     
-    virtual void Text(const std::string & Text) override
+    auto Text(std::string const & Text) -> void override
     {
         m_Result += '(' + Text + ')';
     }
@@ -67,21 +67,16 @@ private:
     std::string m_Result;
 };
 
-std::string TestParse(const std::string & XMLString)
-{
-    std::stringstream XMLStream{XMLString};
-    TestParser Parser{XMLStream};
-    
-    Parser.Parse();
-    
-    return Parser.GetResult();
-}
-
-void Test(const std::string XMLString, const std::string & TestString)
+auto Test(std::string const & XMLString, std::string const & TestString) -> void
 {
     //~ std::cout << ">>>>" << std::endl;
     
-    auto ResultString{TestParse(XMLString)};
+    auto XMLStream = std::stringstream{XMLString};
+    auto Parser = TestParser{XMLStream};
+    
+    Parser.Parse();
+    
+    auto ResultString = Parser.GetResult();
     
     if(ResultString != TestString)
     {
@@ -90,9 +85,10 @@ void Test(const std::string XMLString, const std::string & TestString)
     //~ std::cout << "<<<<" << std::endl;
 }
 
-int main(int argc, char ** argv)
+auto main(int argc, char ** argv) -> int
 {
     Test("<root/>", "[+root][-root]");
+    Test("<   root/>", "[+root][-root]");
     Test("<root />", "[+root][-root]");
     Test("<root></root>", "[+root][-root]");
     Test("<root>text</root>", "[+root](text)[-root]");
@@ -107,6 +103,8 @@ int main(int argc, char ** argv)
     Test("<root>--</root>", "[+root](--)[-root]");
     Test("<root>---</root>", "[+root](---)[-root]");
     Test("<root>!--</root>", "[+root](!--)[-root]");
+    Test("<root>></root>", "[+root](>)[-root]");
+    Test("<root>\"</root>", "[+root](\")[-root]");
     Test("<root attribute=\"value\"/>", "[+root|attribute=value][-root]");
     Test("<root attribute1=\"value1\" attribute2=\"value2\"/>", "[+root|attribute1=value1|attribute2=value2][-root]");
     Test("<root attribute=\"  value\"/>", "[+root|attribute=  value][-root]");

@@ -88,25 +88,25 @@ XMLParser::XMLParser(std::istream & InputStream) :
 {
 }
 
-XMLParser::~XMLParser(void)
+XMLParser::~XMLParser()
 {
 }
 
-void XMLParser::Parse(void)
+auto XMLParser::Parse() -> void
 {
-    std::map< std::string, std::string > Attributes;
-    std::string AttributeName;
-    std::string AttributeValue;
-    std::string Comment;
-    std::string TagName;
-    std::string Text;
-    std::string Entity;
-    char Char;
-    auto ParsingStage{0u};
+    auto Attributes = std::map<std::string, std::string>{};
+    auto AttributeName = std::string{};
+    auto AttributeValue = std::string{};
+    auto Comment = std::string{};
+    auto TagName = std::string{};
+    auto Text = std::string{};
+    auto Entity = std::string{};
+    auto Char = '\0';
+    auto ParsingStage = 0u;
     
     while(m_InputStream.get(Char))
     {
-        //~ std::cout << std::boolalpha << "Got '"  << Char << "' at " << ParsingStage << ". (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\")" << std::endl;
+        //~ std::cout << std::boolalpha << "In stage " << ParsingStage << " got '"  << Char << "'. (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\")" << std::endl;
         switch(Char)
         {
         case '\n':
@@ -239,7 +239,11 @@ void XMLParser::Parse(void)
             }
         case '>':
             {
-                if(ParsingStage == 4)
+                if(ParsingStage == 0)
+                {
+                    Text += Char;
+                }
+                else if(ParsingStage == 4)
                 {
                     Comment += Char;
                 }
@@ -524,18 +528,18 @@ void XMLParser::Parse(void)
     }
 }
 
-void XMLParser::Comment(const std::string & Comment)
+auto XMLParser::Comment(std::string const & Comment) -> void
 {
 }
 
-void XMLParser::ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes)
+auto XMLParser::ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes) -> void
 {
 }
 
-void XMLParser::ElementEnd(const std::string & TagName)
+auto XMLParser::ElementEnd(std::string const & TagName) -> void
 {
 }
 
-void XMLParser::Text(const std::string & Text)
+auto XMLParser::Text(std::string const & Text) -> void
 {
 }

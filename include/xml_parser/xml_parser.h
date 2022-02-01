@@ -30,13 +30,13 @@ class XMLParser
 {
 public:
     XMLParser(std::istream & InputStream);
-    virtual ~XMLParser(void);
-    void Parse(void);
+    virtual ~XMLParser();
+    auto Parse() -> void;
 protected:
-    virtual void Comment(const std::string & Comment);
-    virtual void ElementStart(const std::string & TagName, const std::map< std::string, std::string > & Attributes);
-    virtual void ElementEnd(const std::string & TagName);
-    virtual void Text(const std::string & Text);
+    virtual auto Comment(std::string const & Comment) -> void;
+    virtual auto ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes) -> void;
+    virtual auto ElementEnd(std::string const & TagName) -> void;
+    virtual auto Text(std::string const & Text) -> void;
 private:
     std::istream & m_InputStream;
 };
