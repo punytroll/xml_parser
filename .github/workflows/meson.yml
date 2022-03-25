@@ -1,0 +1,7 @@
+- name: Meson Build
+  uses: BSFishy/meson-build@v1.0.3
+  with:
+      action: test
+      directory: build
+      setup-options: -Db_coverage=true
+      options: --verbose
