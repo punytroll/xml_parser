@@ -24,13 +24,13 @@
 
 #include <xml_parser/xml_parser.h>
 
-void Forward(std::string && From, std::string & To)
+auto Forward(std::string && From, std::string & To) -> void
 {
     To += From;
     From.erase();
 }
 
-void ForwardEntityTo(std::string & Entity, std::string & To)
+auto ForwardEntityTo(std::string & Entity, std::string & To) -> void
 {
     if(Entity == "amp")
     {
