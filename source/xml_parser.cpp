@@ -528,18 +528,18 @@ auto XMLParser::Parse() -> void
     }
 }
 
-auto XMLParser::Comment(std::string const & Comment) -> void
+auto XMLParser::Comment(std::string const &) -> void
 {
 }
 
-auto XMLParser::ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes) -> void
+auto XMLParser::ElementStart(std::string const &, std::map<std::string, std::string> const &) -> void
 {
 }
 
-auto XMLParser::ElementEnd(std::string const & TagName) -> void
+auto XMLParser::ElementEnd(std::string const &) -> void
 {
 }
 
-auto XMLParser::Text(std::string const & Text) -> void
+auto XMLParser::Text(std::string const &) -> void
 {
 }

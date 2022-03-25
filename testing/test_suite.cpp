@@ -85,7 +85,7 @@ auto Test(std::string const & XMLString, std::string const & TestString) -> void
     //~ std::cout << "<<<<" << std::endl;
 }
 
-auto main(int argc, char ** argv) -> int
+auto main([[maybe_unused]] int argc, [[maybe_unused]] char ** argv) -> int
 {
     Test("<root/>", "[+root][-root]");
     Test("<   root/>", "[+root][-root]");
