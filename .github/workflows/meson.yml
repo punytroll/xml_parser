@@ -1,7 +1,26 @@
-- name: Meson Build
-  uses: BSFishy/meson-build@v1.0.3
-  with:
-      action: test
-      directory: build
-      setup-options: -Db_coverage=true
-      options: --verbose
+name: Build & Test
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository with submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Meson Build
+      uses: BSFishy/meson-build@v1.0.3
+      with:
+          action: test
+          directory: build
+          setup-options: -Db_coverage=true
+          options: --verbose
