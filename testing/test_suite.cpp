@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Hagen Möbius
+ * Copyright 2021-2022 Hagen Möbius
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -85,7 +85,7 @@ auto Test(std::string const & XMLString, std::string const & TestString) -> void
     //~ std::cout << "<<<<" << std::endl;
 }
 
-auto main([[maybe_unused]] int argc, [[maybe_unused]] char ** argv) -> int
+auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
 {
     Test("<root/>", "[+root][-root]");
     Test("<   root/>", "[+root][-root]");

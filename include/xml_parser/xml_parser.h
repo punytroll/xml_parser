@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Hagen Möbius
+ * Copyright 2021-2022 Hagen Möbius
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,8 +20,8 @@
  * IN THE SOFTWARE.
 **/
 
-#ifndef XML_PARSER_H
-#define XML_PARSER_H
+#ifndef XML_PARSER__XML_PARSER_H
+#define XML_PARSER__XML_PARSER_H
 
 #include <istream>
 #include <map>
@@ -30,7 +30,7 @@ class XMLParser
 {
 public:
     XMLParser(std::istream & InputStream);
-    virtual ~XMLParser();
+    virtual ~XMLParser() = default;
     auto Parse() -> void;
 protected:
     virtual auto Comment(std::string const & Comment) -> void;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Hagen Möbius
+ * Copyright 2021-2022 Hagen Möbius
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -85,10 +85,6 @@ auto ForwardEntityTo(std::string & Entity, std::string & To) -> void
 
 XMLParser::XMLParser(std::istream & InputStream) :
     m_InputStream(InputStream)
-{
-}
-
-XMLParser::~XMLParser()
 {
 }
 
