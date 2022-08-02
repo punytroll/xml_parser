@@ -9,7 +9,7 @@ project(
 xml_parser_library = library(
   'xml_parser',
   sources: ['source/xml_parser.cpp'],
-  include_directories: include_directories('include')
+  include_directories: include_directories('include/xml_parser')
 )
 
 xml_parser_library_dependency = declare_dependency(
