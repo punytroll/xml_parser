@@ -24,4 +24,4 @@ jobs:
           directory: build
           options: --verbose
           meson-version: 0.63.0
-          ninja-version: 1.10.1
+          ninja-version: 1.10.2.3
