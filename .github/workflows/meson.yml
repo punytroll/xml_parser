@@ -2,26 +2,24 @@ name: Build & Test
 
 on:
   push:
-    branches:
-    - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-    - main
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-    - name: Check out repository with submodules
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    - name: Meson Build
-      uses: BSFishy/meson-build@v1.0.3
-      with:
-          action: test
-          directory: build
-          options: --verbose
-          meson-version: 0.63.0
-          ninja-version: 1.10.2.3
+    - name: Check out repository
+      uses: actions/checkout@v3
+    - name: Install ninja
+      run: pip install ninja
+    - name: Install meson
+      run: pip install meson
+    - name: Setup project build directory
+      run: meson setup build
+    - name: Compile project
+      run: meson compile -C build
+    - name: Run tests
+      run: meson test -C build
