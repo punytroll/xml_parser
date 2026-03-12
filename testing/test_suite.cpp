@@ -152,6 +152,18 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
     Test("<root attribute=\"value!\"/>", "[+root|attribute=value!][-root]");
     Test("<root attribute=\"!value\"/>", "[+root|attribute=!value][-root]");
     Test("<root attribute=\"val!ue\"/>", "[+root|attribute=val!ue][-root]");
+    Test("<root attribute='!'/>", "[+root|attribute=!][-root]");
+    Test("<root attribute='value!'/>", "[+root|attribute=value!][-root]");
+    Test("<root attribute='!value'/>", "[+root|attribute=!value][-root]");
+    Test("<root attribute='val!ue'/>", "[+root|attribute=val!ue][-root]");
+    Test("<root attribute=\"=\"/>", "[+root|attribute==][-root]");
+    Test("<root attribute=\"value=\"/>", "[+root|attribute=value=][-root]");
+    Test("<root attribute=\"=value\"/>", "[+root|attribute==value][-root]");
+    Test("<root attribute=\"val=ue\"/>", "[+root|attribute=val=ue][-root]");
+    Test("<root attribute='='/>", "[+root|attribute==][-root]");
+    Test("<root attribute='value='/>", "[+root|attribute=value=][-root]");
+    Test("<root attribute='=value'/>", "[+root|attribute==value][-root]");
+    Test("<root attribute='val=ue'/>", "[+root|attribute=val=ue][-root]");
     Test("<root-hyphen/>", "[+root-hyphen][-root-hyphen]");
     Test("<root-hyphen></root-hyphen>", "[+root-hyphen][-root-hyphen]");
     Test("<root attribute-hyphen=\"\"/>", "[+root|attribute-hyphen=][-root]");

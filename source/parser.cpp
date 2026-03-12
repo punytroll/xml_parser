@@ -178,6 +178,14 @@ auto XML::Parser::Parse() -> void
                 {
                     ParsingStage = 17;
                 }
+                else if(ParsingStage == 19)
+                {
+                    AttributeValue += Char;
+                }
+                else if(ParsingStage == 21)
+                {
+                    AttributeValue += Char;
+                }
                 
                 break;
             }
