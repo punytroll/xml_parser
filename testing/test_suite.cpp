@@ -105,7 +105,11 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
     Test("<root>!--</root>", "[+root](!--)[-root]");
     Test("<root>></root>", "[+root](>)[-root]");
     Test("<root>\"</root>", "[+root](\")[-root]");
+    Test("<root>'</root>", "[+root](')[-root]");
     Test("<root attribute=\"value\"/>", "[+root|attribute=value][-root]");
+    Test("<root attribute=\"value'\"/>", "[+root|attribute=value'][-root]");
+    Test("<root attribute='value'/>", "[+root|attribute=value][-root]");
+    Test("<root attribute='value\"'/>", "[+root|attribute=value\"][-root]");
     Test("<root attribute1=\"value1\" attribute2=\"value2\"/>", "[+root|attribute1=value1|attribute2=value2][-root]");
     Test("<root attribute=\"  value\"/>", "[+root|attribute=  value][-root]");
     Test("<root attribute=\"value  \"/>", "[+root|attribute=value  ][-root]");
