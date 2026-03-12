@@ -140,10 +140,14 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
     <parameter name=\"identifier\">127.0.0.1</parameter>\
     <parameter name=\"title\">localhost</parameter>\
 </call>", "[+call|function=insert](    )[+parameter|name=identifier](127.0.0.1)[-parameter](    )[+parameter|name=title](localhost)[-parameter][-call]");
-    Test("<root att=\"h&amp;m\"/>", "[+root|att=h&m][-root]");
-    Test("<root att=\"h&quot;m\"/>", "[+root|att=h\"m][-root]");
-    Test("<root att=\"h&apos;m\"/>", "[+root|att=h'm][-root]");
-    Test("<root att=\"h&apos;&amp;m\"/>", "[+root|att=h'&m][-root]");
+    Test("<root attribute=\"h&amp;m\"/>", "[+root|attribute=h&m][-root]");
+    Test("<root attribute=\"h&quot;m\"/>", "[+root|attribute=h\"m][-root]");
+    Test("<root attribute=\"h&apos;m\"/>", "[+root|attribute=h'm][-root]");
+    Test("<root attribute=\"h&apos;&amp;m\"/>", "[+root|attribute=h'&m][-root]");
+    Test("<root attribute=\"!\"/>", "[+root|attribute=!][-root]");
+    Test("<root attribute=\"value!\"/>", "[+root|attribute=value!][-root]");
+    Test("<root attribute=\"!value\"/>", "[+root|attribute=!value][-root]");
+    Test("<root attribute=\"val!ue\"/>", "[+root|attribute=val!ue][-root]");
     Test("<root-hyphen/>", "[+root-hyphen][-root-hyphen]");
     Test("<root-hyphen></root-hyphen>", "[+root-hyphen][-root-hyphen]");
     Test("<root attribute-hyphen=\"\"/>", "[+root|attribute-hyphen=][-root]");

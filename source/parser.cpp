@@ -70,7 +70,6 @@ auto ForwardEntityTo(std::string & Entity, std::string & To) -> void
  * - 6  ->  when '<!--' .. '--' is read, comment closing, '>' expected next, which turns around to stage 0
  * - 7  ->  when '&' is read in the document scope
  * - 8  ->  when '<' was read but not continued by '!', this is an opening or self-closing tag
- * - 9  ->  when '&' is read in an attribute value
  * - 10 ->  when '/' is read in a tag but not after the opening '<', a self-closing tag
  * - 11 ->  when '</' is read, a closing tag
  * - 12 ->  when inside an opening or self-closing tag identifier
@@ -80,7 +79,8 @@ auto ForwardEntityTo(std::string & Entity, std::string & To) -> void
  * - 16 ->  when a whitespace is read after an attribute identifier
  * - 17 ->  when '=' is read after an attribute identifier
  * - 18 ->  when a whitespace is read after a '=' for an attribute
- * - 19 ->  when inside an attribute value
+ * - 19 ->  when inside an attribute value with double quotes
+ * - 20 ->  when '&' is read in an attribute value with double quotes
  **/
 
 XML::Parser::Parser(std::istream & InputStream) :
@@ -349,7 +349,7 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 19)
                 {
-                    ParsingStage = 9;
+                    ParsingStage = 20;
                 }
                 
                 break;
@@ -375,7 +375,7 @@ auto XML::Parser::Parse() -> void
                     ForwardEntityTo(Entity, Text);
                     ParsingStage = 0;
                 }
-                else if(ParsingStage == 9)
+                else if(ParsingStage == 20)
                 {
                     ForwardEntityTo(Entity, AttributeValue);
                     ParsingStage = 19;
@@ -402,6 +402,10 @@ auto XML::Parser::Parse() -> void
                     Comment += '-';
                     Comment += Char;
                     ParsingStage = 4;
+                }
+                else if(ParsingStage == 19)
+                {
+                    AttributeValue += Char;
                 }
                 
                 break;
@@ -487,7 +491,7 @@ auto XML::Parser::Parse() -> void
                     AttributeName += Char;
                     ParsingStage = 13;
                 }
-                else if(ParsingStage == 9)
+                else if(ParsingStage == 20)
                 {
                     Entity += Char;
                 }
