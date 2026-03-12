@@ -20,25 +20,28 @@
  * IN THE SOFTWARE.
 **/
 
-#ifndef XML_PARSER__XML_PARSER_H
-#define XML_PARSER__XML_PARSER_H
+#ifndef XML_PARSER__PARSER_H
+#define XML_PARSER__PARSER_H
 
 #include <istream>
 #include <map>
 
-class XMLParser
+namespace XML
 {
-public:
-    XMLParser(std::istream & InputStream);
-    virtual ~XMLParser() = default;
-    auto Parse() -> void;
-protected:
-    virtual auto Comment(std::string const & Comment) -> void;
-    virtual auto ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes) -> void;
-    virtual auto ElementEnd(std::string const & TagName) -> void;
-    virtual auto Text(std::string const & Text) -> void;
-private:
-    std::istream & m_InputStream;
-};
+    class Parser
+    {
+    public:
+        Parser(std::istream & InputStream);
+        virtual ~Parser() = default;
+        auto Parse() -> void;
+    protected:
+        virtual auto Comment(std::string const & Comment) -> void;
+        virtual auto ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes) -> void;
+        virtual auto ElementEnd(std::string const & TagName) -> void;
+        virtual auto Text(std::string const & Text) -> void;
+    private:
+        std::istream & m_InputStream;
+    };
+}
 
 #endif

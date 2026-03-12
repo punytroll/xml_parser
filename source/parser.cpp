@@ -1,5 +1,5 @@
 /**
- * Copyright 2021-2022 Hagen Möbius
+ * Copyright 2021-2026 Hagen Möbius
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#include <xml_parser.h>
+#include <xml_parser/parser.h>
 
 auto Forward(std::string && From, std::string & To) -> void
 {
@@ -83,12 +83,12 @@ auto ForwardEntityTo(std::string & Entity, std::string & To) -> void
  * - 19 ->  when inside an attribute value
  **/
 
-XMLParser::XMLParser(std::istream & InputStream) :
+XML::Parser::Parser(std::istream & InputStream) :
     m_InputStream(InputStream)
 {
 }
 
-auto XMLParser::Parse() -> void
+auto XML::Parser::Parse() -> void
 {
     auto Attributes = std::map<std::string, std::string>{};
     auto AttributeName = std::string{};
@@ -524,18 +524,18 @@ auto XMLParser::Parse() -> void
     }
 }
 
-auto XMLParser::Comment(std::string const &) -> void
+auto XML::Parser::Comment(std::string const &) -> void
 {
 }
 
-auto XMLParser::ElementStart(std::string const &, std::map<std::string, std::string> const &) -> void
+auto XML::Parser::ElementStart(std::string const &, std::map<std::string, std::string> const &) -> void
 {
 }
 
-auto XMLParser::ElementEnd(std::string const &) -> void
+auto XML::Parser::ElementEnd(std::string const &) -> void
 {
 }
 
-auto XMLParser::Text(std::string const &) -> void
+auto XML::Parser::Text(std::string const &) -> void
 {
 }

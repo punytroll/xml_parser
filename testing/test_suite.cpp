@@ -24,13 +24,13 @@
 #include <iostream>
 #include <sstream>
 
-#include <xml_parser/xml_parser.h>
+#include <xml_parser/parser.h>
 
-class TestParser : public XMLParser
+class TestParser : public XML::Parser
 {
 public:
     TestParser(std::istream & InputStream) :
-        XMLParser(InputStream)
+        XML::Parser(InputStream)
     {
     }
     
