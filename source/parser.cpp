@@ -99,13 +99,13 @@ auto XML::Parser::Parse() -> void
     auto TagName = std::string{};
     auto Text = std::string{};
     auto Entity = std::string{};
-    auto Char = '\0';
+    auto Character = '\0';
     auto ParsingStage = 0u;
     
-    while(m_InputStream.get(Char))
+    while(m_InputStream.get(Character))
     {
-        //~ std::cout << std::boolalpha << "In stage " << ParsingStage << " got '"  << Char << "'. (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\")" << std::endl;
-        switch(Char)
+        //~ std::cout << std::boolalpha << "In stage " << ParsingStage << " got '"  << Character << "'. (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\")" << std::endl;
+        switch(Character)
         {
         case '\n':
         case '\t':
@@ -113,22 +113,22 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 6)
                 {
                     Comment += "--";
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 12)
@@ -145,11 +145,11 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 19)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 21)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 
                 break;
@@ -158,16 +158,16 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 13)
@@ -180,11 +180,11 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 19)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 21)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 
                 break;
@@ -193,16 +193,16 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 17)
@@ -222,7 +222,7 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 21)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 
                 break;
@@ -231,16 +231,16 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 17)
@@ -253,7 +253,7 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 19)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 21)
                 {
@@ -278,12 +278,12 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 
@@ -293,16 +293,16 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 6)
@@ -352,7 +352,7 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 1)
                 {
@@ -360,12 +360,12 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 8)
@@ -382,11 +382,11 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 19)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 21)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 
                 break;
@@ -399,12 +399,12 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 19)
@@ -422,16 +422,16 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 7)
@@ -456,7 +456,7 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 1)
                 {
@@ -464,21 +464,21 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 19)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 21)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 
                 break;
@@ -487,7 +487,7 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 2)
                 {
@@ -511,23 +511,23 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 12)
                 {
-                    TagName += Char;
+                    TagName += Character;
                 }
                 else if(ParsingStage == 13)
                 {
-                    AttributeName += Char;
+                    AttributeName += Character;
                 }
                 else if(ParsingStage == 14)
                 {
-                    TagName += Char;
+                    TagName += Character;
                 }
                 else if(ParsingStage == 19)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 21)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 
                 break;
@@ -536,75 +536,75 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
-                    Text += Char;
+                    Text += Character;
                 }
                 else if(ParsingStage == 1)
                 {
-                    TagName += Char;
+                    TagName += Character;
                     ParsingStage = 12;
                 }
                 else if(ParsingStage == 4)
                 {
-                    Comment += Char;
+                    Comment += Character;
                 }
                 else if(ParsingStage == 5)
                 {
                     Comment += '-';
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 6)
                 {
                     Comment += "--";
-                    Comment += Char;
+                    Comment += Character;
                     ParsingStage = 4;
                 }
                 else if(ParsingStage == 7)
                 {
-                    Entity += Char;
+                    Entity += Character;
                 }
                 else if(ParsingStage == 8)
                 {
-                    AttributeName += Char;
+                    AttributeName += Character;
                     ParsingStage = 13;
                 }
                 else if(ParsingStage == 11)
                 {
-                    TagName += Char;
+                    TagName += Character;
                     ParsingStage = 14;
                 }
                 else if(ParsingStage == 12)
                 {
-                    TagName += Char;
+                    TagName += Character;
                 }
                 else if(ParsingStage == 13)
                 {
-                    AttributeName += Char;
+                    AttributeName += Character;
                 }
                 else if(ParsingStage == 14)
                 {
-                    TagName += Char;
+                    TagName += Character;
                 }
                 else if(ParsingStage == 15)
                 {
-                    AttributeName += Char;
+                    AttributeName += Character;
                     ParsingStage = 13;
                 }
                 else if(ParsingStage == 19)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 20)
                 {
-                    Entity += Char;
+                    Entity += Character;
                 }
                 else if(ParsingStage == 21)
                 {
-                    AttributeValue += Char;
+                    AttributeValue += Character;
                 }
                 else if(ParsingStage == 22)
                 {
-                    Entity += Char;
+                    Entity += Character;
                 }
                 
                 break;
