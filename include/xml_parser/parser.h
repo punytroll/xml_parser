@@ -23,11 +23,19 @@
 #ifndef XML_PARSER__PARSER_H
 #define XML_PARSER__PARSER_H
 
+#include <cstdint>
 #include <istream>
 #include <map>
 
 namespace XML
 {
+    class Location
+    {
+    public:
+        std::uint64_t Column;
+        std::uint64_t Line;
+    };
+    
     class Parser
     {
     public:
@@ -35,10 +43,10 @@ namespace XML
         virtual ~Parser() = default;
         auto Parse() -> void;
     protected:
-        virtual auto Comment(std::string const & Comment) -> void;
-        virtual auto ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes) -> void;
+        virtual auto Comment(std::string const & Comment, XML::Location const & StartLocation) -> void;
+        virtual auto ElementStart(std::string const & TagName, std::map<std::string, std::string> const & Attributes, XML::Location const & StartLocation) -> void;
         virtual auto ElementEnd(std::string const & TagName) -> void;
-        virtual auto Text(std::string const & Text) -> void;
+        virtual auto Text(std::string const & Text, XML::Location const & StartLocation) -> void;
     private:
         std::istream & m_InputStream;
     };

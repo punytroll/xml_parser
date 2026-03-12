@@ -20,7 +20,9 @@
  * IN THE SOFTWARE.
 **/
 
+#include <cassert>
 #include <iostream>
+#include <optional>
 
 #include <xml_parser/parser.h>
 
@@ -101,10 +103,25 @@ auto XML::Parser::Parse() -> void
     auto Entity = std::string{};
     auto Character = '\0';
     auto ParsingStage = 0u;
+    auto CurrentLocation = XML::Location{};
+    
+    CurrentLocation.Column = 0;
+    CurrentLocation.Line = 0;
+    
+    auto StartLocation = std::optional<XML::Location>{};
     
     while(m_InputStream.get(Character))
     {
-        //~ std::cout << std::boolalpha << "In stage " << ParsingStage << " got '"  << Character << "'. (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\")" << std::endl;
+        //~ std::cout << std::boolalpha << "In stage " << ParsingStage << " got '"  << Character << "'. (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\"; CurrentLocation.Line=\"" << CurrentLocation.Line << "\"; CurrentLocation.Column=\"" << CurrentLocation.Column << "\"; ";
+        //~ if(StartLocation.has_value() == true)
+        //~ {
+            //~ std::cout << "StartLocation.Line=\"" << StartLocation->Line << "\"; StartLocation.Column=\"" << StartLocation->Column << "\"";
+        //~ }
+        //~ else
+        //~ {
+            //~ std::cout << "StartLocation=none";
+        //~ }
+        //~ std::cout << ')' << std::endl;
         switch(Character)
         {
         case '\n':
@@ -113,6 +130,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 4)
@@ -158,6 +179,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 4)
@@ -193,6 +218,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 4)
@@ -231,6 +260,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 4)
@@ -271,9 +304,11 @@ auto XML::Parser::Parse() -> void
                 {
                     if(Text.empty() == false)
                     {
-                        this->Text(Text);
+                        assert(StartLocation.has_value() == true);
+                        this->Text(Text, StartLocation.value());
                         Text.erase();
                     }
+                    StartLocation = CurrentLocation;
                     ParsingStage = 1;
                 }
                 else if(ParsingStage == 4)
@@ -293,6 +328,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 4)
@@ -307,23 +346,29 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 6)
                 {
-                    ParsingStage = 0;
-                    this->Comment(Comment);
+                    assert(StartLocation.has_value() == true);
+                    this->Comment(Comment, StartLocation.value());
                     Comment.erase();
+                    StartLocation.reset();
+                    ParsingStage = 0;
                 }
                 else if(ParsingStage == 8)
                 {
-                    ElementStart(TagName, Attributes);
+                    assert(StartLocation.has_value() == true);
+                    ElementStart(TagName, Attributes, StartLocation.value());
                     TagName.erase();
                     Attributes.clear();
+                    StartLocation.reset();
                     ParsingStage = 0;
                 }
                 else if(ParsingStage == 10)
                 {
-                    ElementStart(TagName, Attributes);
+                    assert(StartLocation.has_value() == true);
+                    ElementStart(TagName, Attributes, StartLocation.value());
                     ElementEnd(TagName);
                     TagName.erase();
                     Attributes.clear();
+                    StartLocation.reset();
                     ParsingStage = 0;
                 }
                 else if(ParsingStage == 11)
@@ -334,9 +379,11 @@ auto XML::Parser::Parse() -> void
                 }
                 else if(ParsingStage == 12)
                 {
-                    ElementStart(TagName, Attributes);
+                    assert(StartLocation.has_value() == true);
+                    ElementStart(TagName, Attributes, StartLocation.value());
                     TagName.erase();
                     Attributes.clear();
+                    StartLocation.reset();
                     ParsingStage = 0;
                 }
                 else if(ParsingStage == 14)
@@ -352,10 +399,15 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 1)
                 {
+                    StartLocation.reset();
                     ParsingStage = 11;
                 }
                 else if(ParsingStage == 4)
@@ -395,6 +447,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     ParsingStage = 7;
                 }
                 else if(ParsingStage == 4)
@@ -422,6 +478,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 4)
@@ -456,6 +516,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 1)
@@ -487,6 +551,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 2)
@@ -536,6 +604,10 @@ auto XML::Parser::Parse() -> void
             {
                 if(ParsingStage == 0)
                 {
+                    if(StartLocation.has_value() == false)
+                    {
+                        StartLocation = CurrentLocation;
+                    }
                     Text += Character;
                 }
                 else if(ParsingStage == 1)
@@ -610,14 +682,23 @@ auto XML::Parser::Parse() -> void
                 break;
             }
         }
+        if(Character == '\n')
+        {
+            CurrentLocation.Column = 0;
+            CurrentLocation.Line += 1;
+        }
+        else
+        {
+            CurrentLocation.Column += 1;
+        }
     }
 }
 
-auto XML::Parser::Comment(std::string const &) -> void
+auto XML::Parser::Comment(std::string const &, XML::Location const &) -> void
 {
 }
 
-auto XML::Parser::ElementStart(std::string const &, std::map<std::string, std::string> const &) -> void
+auto XML::Parser::ElementStart(std::string const &, std::map<std::string, std::string> const &, XML::Location const &) -> void
 {
 }
 
@@ -625,6 +706,6 @@ auto XML::Parser::ElementEnd(std::string const &) -> void
 {
 }
 
-auto XML::Parser::Text(std::string const &) -> void
+auto XML::Parser::Text(std::string const &, XML::Location const &) -> void
 {
 }
