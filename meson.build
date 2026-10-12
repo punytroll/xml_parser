@@ -1,7 +1,7 @@
 project(
   'xml_parser',
   'cpp',
-  version: '26.3.1',
+  version: '26.10.0',
   meson_version: '>=1.10.0',
   default_options: [
     'cpp_std=c++23',
