@@ -135,6 +135,25 @@ auto TestPosition(std::string const & XMLString, std::string const & TestString)
     //~ std::cout << "<<<<" << std::endl;
 }
 
+auto TestError(std::string const & XMLString, XML::Location const & ExpectedErrorLocation) -> void
+{
+    //~ std::cout << ">>>> parsing \"" << XMLString << '"' << std::endl;
+    
+    auto XMLStream = std::stringstream{XMLString};
+    auto Parser = XML::Parser{XMLStream};
+    auto ParseResult = Parser.Parse();
+    
+    if(ParseResult.has_value() == true)
+    {
+        throw std::runtime_error{std::format("Parsing the XML string \"{}\" succeeded unexpectedly:\n        Expected error in: {}:{}", XMLString, ExpectedErrorLocation.Line, ExpectedErrorLocation.Column)};
+    }
+    else if((ParseResult.error().Location.Line != ExpectedErrorLocation.Line) || (ParseResult.error().Location.Column != ExpectedErrorLocation.Column))
+    {
+        throw std::runtime_error{std::format("Parsing the XML string \"{}\" resulted in an error in the wrong location:\n        Expected error in: {}:{}\n          Actual error in: {}:{}", XMLString, ExpectedErrorLocation.Line, ExpectedErrorLocation.Column, ParseResult.error().Location.Line, ParseResult.error().Location.Column)};
+    }
+    //~ std::cout << "<<<<" << std::endl;
+}
+
 auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
 {
     // testing positions
@@ -151,9 +170,10 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
     TestPosition("<root>text<!-- comment --></root>", "0:0+root0:6=text0:10# comment ");
     // testing content
     TestContent("<root/>", "[+root][-root]");
-    TestContent("<   root/>", "[+root][-root]");
-    TestContent("<root />", "[+root][-root]");
+    TestContent("<root  />", "[+root][-root]");
     TestContent("<root></root>", "[+root][-root]");
+    TestContent("<root  ></root>", "[+root][-root]");
+    TestContent("<root></root   >", "[+root][-root]");
     TestContent("<root>text</root>", "[+root](text)[-root]");
     TestContent("<root>=</root>", "[+root](=)[-root]");
     TestContent("<root>/</root>", "[+root](/)[-root]");
@@ -241,4 +261,129 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
     TestContent("<root><!-- --- --></root>", "[+root]{ --- }[-root]");
     TestContent("<root><!-- ---- --></root>", "[+root]{ ---- }[-root]");
     TestContent("<root><!-- <t-e-s-t></t-e-s-t> --></root>", "[+root]{ <t-e-s-t></t-e-s-t> }[-root]");
+    // testing errors
+    TestError("< root/>", XML::Location{0, 1});
+    TestError("<<root/>", XML::Location{0, 1});
+    TestError("<>root/>", XML::Location{0, 1});
+    TestError("<=root/>", XML::Location{0, 1});
+    TestError("<-root/>", XML::Location{0, 1});
+    TestError("<\"root/>", XML::Location{0, 1});
+    TestError("<'root/>", XML::Location{0, 1});
+    TestError("<!root/>", XML::Location{0, 2});
+    TestError("<&root/>", XML::Location{0, 1});
+    TestError("</root/>", XML::Location{0, 6});
+    TestError("<;root/>", XML::Location{0, 1});
+    TestError("<root><    /root>", XML::Location{0, 7});
+    TestError("<root></   root>", XML::Location{0, 8});
+    TestError("<root></ro   ot>", XML::Location{0, 13});
+    TestError("<root></=root>", XML::Location{0, 8});
+    TestError("<root></-root>", XML::Location{0, 8});
+    TestError("<root></\"root>", XML::Location{0, 8});
+    TestError("<root></'root>", XML::Location{0, 8});
+    TestError("<root></<root>", XML::Location{0, 8});
+    TestError("<root></>root>", XML::Location{0, 8});
+    TestError("<root></!root>", XML::Location{0, 8});
+    TestError("<root></;root>", XML::Location{0, 8});
+    TestError("<root></&root>", XML::Location{0, 8});
+    TestError("<root><//root>", XML::Location{0, 8});
+    TestError("<root></ro<>", XML::Location{0, 10});
+    TestError("<root></ro=>", XML::Location{0, 10});
+    TestError("<root></ro!>", XML::Location{0, 10});
+    TestError("<root></ro\">", XML::Location{0, 10});
+    TestError("<root></ro'>", XML::Location{0, 10});
+    TestError("<root></ro&>", XML::Location{0, 10});
+    TestError("<root></ro;>", XML::Location{0, 10});
+    TestError("<root></ro/>", XML::Location{0, 10});
+    TestError("<root></ro\t<>", XML::Location{0, 11});
+    TestError("<root></ro\t=>", XML::Location{0, 11});
+    TestError("<root></ro\t!>", XML::Location{0, 11});
+    TestError("<root></ro\t\">", XML::Location{0, 11});
+    TestError("<root></ro\t'>", XML::Location{0, 11});
+    TestError("<root></ro\t&>", XML::Location{0, 11});
+    TestError("<root></ro\t;>", XML::Location{0, 11});
+    TestError("<root></ro\t/>", XML::Location{0, 11});
+    TestError("<root></ro\t->", XML::Location{0, 11});
+    TestError("<ro ot/>", XML::Location{0, 6});
+    TestError("<root/ >", XML::Location{0, 6});
+    TestError("<root//>", XML::Location{0, 6});
+    TestError("<root/<>", XML::Location{0, 6});
+    TestError("<root/\">", XML::Location{0, 6});
+    TestError("<root/'>", XML::Location{0, 6});
+    TestError("<root/&>", XML::Location{0, 6});
+    TestError("<root/=>", XML::Location{0, 6});
+    TestError("<root/->", XML::Location{0, 6});
+    TestError("<root/!>", XML::Location{0, 6});
+    TestError("<root attribute=\">\"></root>", XML::Location{0, 17});
+    TestError("<root attribute=\"<\"></root>", XML::Location{0, 17});
+    TestError("<root attribute='>'></root>", XML::Location{0, 17});
+    TestError("<root attribute='<'></root>", XML::Location{0, 17});
+    TestError("<root \"></root>", XML::Location{0, 6});
+    TestError("<root <></root>", XML::Location{0, 6});
+    TestError("<root '></root>", XML::Location{0, 6});
+    TestError("<root &></root>", XML::Location{0, 6});
+    TestError("<root !></root>", XML::Location{0, 6});
+    TestError("<root ;></root>", XML::Location{0, 6});
+    TestError("<root -></root>", XML::Location{0, 6});
+    TestError("<root\"></root>", XML::Location{0, 5});
+    TestError("<root<></root>", XML::Location{0, 5});
+    TestError("<root'></root>", XML::Location{0, 5});
+    TestError("<root&></root>", XML::Location{0, 5});
+    TestError("<root!></root>", XML::Location{0, 5});
+    TestError("<root;></root>", XML::Location{0, 5});
+    TestError("<root attribute==\"\"></root>", XML::Location{0, 16});
+    TestError("<root attr ibute=\"\"></root>", XML::Location{0, 11});
+    TestError("<root attr=ibute=\"\"></root>", XML::Location{0, 11});
+    TestError("<root attr= ibute=\"\"></root>", XML::Location{0, 12});
+    TestError("<root attribute!></root>", XML::Location{0, 15});
+    TestError("<root attribute !></root>", XML::Location{0, 16});
+    TestError("<root attribute=!></root>", XML::Location{0, 16});
+    TestError("<root attribute= !></root>", XML::Location{0, 17});
+    TestError("<root attribute;></root>", XML::Location{0, 15});
+    TestError("<root attribute ;></root>", XML::Location{0, 16});
+    TestError("<root attribute=;></root>", XML::Location{0, 16});
+    TestError("<root attribute= ;></root>", XML::Location{0, 17});
+    TestError("<root attribute&></root>", XML::Location{0, 15});
+    TestError("<root attribute &></root>", XML::Location{0, 16});
+    TestError("<root attribute=&></root>", XML::Location{0, 16});
+    TestError("<root attribute= &></root>", XML::Location{0, 17});
+    TestError("<root attribute/></root>", XML::Location{0, 15});
+    TestError("<root attribute /></root>", XML::Location{0, 16});
+    TestError("<root attribute=/></root>", XML::Location{0, 16});
+    TestError("<root attribute= /></root>", XML::Location{0, 17});
+    TestError("<root attribute></root>", XML::Location{0, 15});
+    TestError("<root attribute ></root>", XML::Location{0, 16});
+    TestError("<root attribute=></root>", XML::Location{0, 16});
+    TestError("<root attribute= ></root>", XML::Location{0, 17});
+    TestError("<root attribute<></root>", XML::Location{0, 15});
+    TestError("<root attribute <></root>", XML::Location{0, 16});
+    TestError("<root attribute=<></root>", XML::Location{0, 16});
+    TestError("<root attribute= <></root>", XML::Location{0, 17});
+    TestError("<root attribute'></root>", XML::Location{0, 15});
+    TestError("<root attribute '></root>", XML::Location{0, 16});
+    TestError("<root attribute\"></root>", XML::Location{0, 15});
+    TestError("<root attribute \"></root>", XML::Location{0, 16});
+    TestError("<root attribute=\"H& \"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&\t\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&\n\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&=\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&-\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&<\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&>\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&'\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&!\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&;\"></root>", XML::Location{0, 19});
+    TestError("<root attribute=\"H&&\"></root>", XML::Location{0, 19});
+    TestError("<root attribute='H& '></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&\t'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&\n'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&='></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&-'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&<'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&>'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&''></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&!'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&;'></root>", XML::Location{0, 19});
+    TestError("<root attribute='H&&'></root>", XML::Location{0, 19});
 }

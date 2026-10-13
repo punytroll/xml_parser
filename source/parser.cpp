@@ -55,13 +55,13 @@ auto ForwardEntityTo(std::string & Entity, std::string & To) -> void
  * - 5  ->  when '<!--' .. '-' is read, preparing to close a comment
  * - 6  ->  when '<!--' .. '--' is read, comment closing, '>' expected next, which turns around to stage 0
  * - 7  ->  when '&' is read in the document scope
- * - 8  ->  when '<' was read but not continued by '!', this is an opening or self-closing tag
+ * - 9  ->  when the closing tag identifier has been finalised by a whitespace
  * - 10 ->  when '/' is read in a tag but not after the opening '<', a self-closing tag
  * - 11 ->  when '</' is read, a closing tag
  * - 12 ->  when inside an opening or self-closing tag identifier
  * - 13 ->  when inside an attribute identifier in an opening or self-closing tag
  * - 14 ->  when inside a closing tag identifier
- * - 15 ->  when the tag identifier of an opening or self-closing tag is done
+ * - 15 ->  when the tag identifier of an opening or self-closing tag is has been finalised by a whitespace
  * - 16 ->  when a whitespace is read after an attribute identifier
  * - 17 ->  when '=' is read after an attribute identifier
  * - 18 ->  when a whitespace is read after a '=' for an attribute
@@ -89,8 +89,9 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
     auto ParsingStage = 0u;
     auto CurrentLocation = XML::Location{0, 0};
     auto StartLocation = std::optional<XML::Location>{};
+    auto ErrorLocation = std::optional<XML::Location>{};
     
-    while(m_InputStream.get(Character))
+    while((ErrorLocation.has_value() == false) && (m_InputStream.get(Character)))
     {
         //~ std::cout << std::boolalpha << "In stage " << ParsingStage << " got '"  << Character << "'. (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\"; CurrentLocation.Line=\"" << CurrentLocation.Line << "\"; CurrentLocation.Column=\"" << CurrentLocation.Column << "\"; ";
         //~ if(StartLocation.has_value() == true)
@@ -116,6 +117,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     }
                     Text += Character;
                 }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 4)
                 {
                     Comment += Character;
@@ -132,6 +137,14 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += Character;
                     ParsingStage = 4;
                 }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 12)
                 {
                     ParsingStage = 15;
@@ -139,6 +152,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 else if(ParsingStage == 13)
                 {
                     ParsingStage = 16;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ParsingStage = 9;
                 }
                 else if(ParsingStage == 17)
                 {
@@ -148,9 +165,17 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     AttributeValue += Character;
                 }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 21)
                 {
                     AttributeValue += Character;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -165,6 +190,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     }
                     Text += Character;
                 }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 4)
                 {
                     Comment += Character;
@@ -175,21 +204,57 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += Character;
                     ParsingStage = 4;
                 }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 12)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 13)
                 {
                     ParsingStage = 17;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 16)
                 {
                     ParsingStage = 17;
                 }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 19)
                 {
                     AttributeValue += Character;
                 }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 21)
                 {
                     AttributeValue += Character;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -204,6 +269,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     }
                     Text += Character;
                 }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 4)
                 {
                     Comment += Character;
@@ -213,6 +282,38 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += '-';
                     Comment += Character;
                     ParsingStage = 4;
+                }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 12)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 17)
                 {
@@ -227,7 +328,11 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Attributes[AttributeName] = AttributeValue;
                     AttributeName.erase();
                     AttributeValue.erase();
-                    ParsingStage = 8;
+                    ParsingStage = 15;
+                }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 21)
                 {
@@ -246,6 +351,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     }
                     Text += Character;
                 }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 4)
                 {
                     Comment += Character;
@@ -255,6 +364,38 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += '-';
                     Comment += Character;
                     ParsingStage = 4;
+                }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 12)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 17)
                 {
@@ -268,12 +409,20 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     AttributeValue += Character;
                 }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 21)
                 {
                     Attributes[AttributeName] = AttributeValue;
                     AttributeName.erase();
                     AttributeValue.erase();
-                    ParsingStage = 8;
+                    ParsingStage = 15;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -291,6 +440,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     StartLocation = CurrentLocation;
                     ParsingStage = 1;
                 }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 4)
                 {
                     Comment += Character;
@@ -300,6 +453,62 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += '-';
                     Comment += Character;
                     ParsingStage = 4;
+                }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 12)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 18)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 19)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 21)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -313,6 +522,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                         StartLocation = CurrentLocation;
                     }
                     Text += Character;
+                }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 4)
                 {
@@ -332,13 +545,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     StartLocation.reset();
                     ParsingStage = 0;
                 }
-                else if(ParsingStage == 8)
+                else if(ParsingStage == 9)
                 {
-                    assert(StartLocation.has_value() == true);
-                    ElementStart(TagName, Attributes, StartLocation.value());
+                    ElementEnd(TagName);
                     TagName.erase();
-                    Attributes.clear();
-                    StartLocation.reset();
                     ParsingStage = 0;
                 }
                 else if(ParsingStage == 10)
@@ -353,9 +563,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 11)
                 {
-                    ElementEnd(TagName);
-                    TagName.erase();
-                    ParsingStage = 0;
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 12)
                 {
@@ -366,11 +574,52 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     StartLocation.reset();
                     ParsingStage = 0;
                 }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 14)
                 {
                     ElementEnd(TagName);
                     TagName.erase();
                     ParsingStage = 0;
+                }
+                else if(ParsingStage == 15)
+                {
+                    assert(StartLocation.has_value() == true);
+                    ElementStart(TagName, Attributes, StartLocation.value());
+                    TagName.erase();
+                    Attributes.clear();
+                    StartLocation.reset();
+                    ParsingStage = 0;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 18)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 19)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 21)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -400,17 +649,49 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += Character;
                     ParsingStage = 4;
                 }
-                else if(ParsingStage == 8)
+                else if(ParsingStage == 9)
                 {
-                    ParsingStage = 10;
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 12)
                 {
                     ParsingStage = 10;
                 }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 15)
                 {
                     ParsingStage = 10;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 18)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 19)
                 {
@@ -433,6 +714,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     }
                     ParsingStage = 7;
                 }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 4)
                 {
                     Comment += Character;
@@ -443,13 +728,61 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += Character;
                     ParsingStage = 4;
                 }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 12)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 18)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 19)
                 {
                     ParsingStage = 20;
                 }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 21)
                 {
                     ParsingStage = 22;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -463,6 +796,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                         StartLocation = CurrentLocation;
                     }
                     Text += Character;
+                }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 4)
                 {
@@ -479,14 +816,57 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     ForwardEntityTo(Entity, Text);
                     ParsingStage = 0;
                 }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 12)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 18)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 19)
                 {
                     AttributeValue += Character;
                 }
                 else if(ParsingStage == 20)
                 {
-                    ForwardEntityTo(Entity, AttributeValue);
-                    ParsingStage = 19;
+                    if(Entity.empty() == true)
+                    {
+                        ErrorLocation = CurrentLocation;
+                    }
+                    else
+                    {
+                        ForwardEntityTo(Entity, AttributeValue);
+                        ParsingStage = 19;
+                    }
                 }
                 else if(ParsingStage == 21)
                 {
@@ -494,8 +874,15 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 22)
                 {
-                    ForwardEntityTo(Entity, AttributeValue);
-                    ParsingStage = 21;
+                    if(Entity.empty() == true)
+                    {
+                        ErrorLocation = CurrentLocation;
+                    }
+                    else
+                    {
+                        ForwardEntityTo(Entity, AttributeValue);
+                        ParsingStage = 21;
+                    }
                 }
                 
                 break;
@@ -524,13 +911,61 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                     Comment += Character;
                     ParsingStage = 4;
                 }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 12)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 13)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 14)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 18)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 19)
                 {
                     AttributeValue += Character;
                 }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 21)
                 {
                     AttributeValue += Character;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -544,6 +979,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                         StartLocation = CurrentLocation;
                     }
                     Text += Character;
+                }
+                else if(ParsingStage == 1)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 2)
                 {
@@ -565,6 +1004,18 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     Comment += '-';
                 }
+                else if(ParsingStage == 9)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 10)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 11)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 12)
                 {
                     TagName += Character;
@@ -577,13 +1028,25 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     TagName += Character;
                 }
+                else if(ParsingStage == 15)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 19)
                 {
                     AttributeValue += Character;
                 }
+                else if(ParsingStage == 20)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
                 else if(ParsingStage == 21)
                 {
                     AttributeValue += Character;
+                }
+                else if(ParsingStage == 22)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 
                 break;
@@ -602,6 +1065,10 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     TagName += Character;
                     ParsingStage = 12;
+                }
+                else if(ParsingStage == 2)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 4)
                 {
@@ -623,10 +1090,9 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     Entity += Character;
                 }
-                else if(ParsingStage == 8)
+                else if(ParsingStage == 9)
                 {
-                    AttributeName += Character;
-                    ParsingStage = 13;
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 11)
                 {
@@ -649,6 +1115,18 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     AttributeName += Character;
                     ParsingStage = 13;
+                }
+                else if(ParsingStage == 16)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 17)
+                {
+                    ErrorLocation = CurrentLocation;
+                }
+                else if(ParsingStage == 18)
+                {
+                    ErrorLocation = CurrentLocation;
                 }
                 else if(ParsingStage == 19)
                 {
@@ -680,8 +1158,14 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
             CurrentLocation.Column += 1;
         }
     }
-    
-    return {};
+    if(ErrorLocation.has_value() == true)
+    {
+        return std::unexpected{XML::Error{ErrorLocation.value()}};
+    }
+    else
+    {
+        return {};
+    }
 }
 
 auto XML::Parser::Comment(std::string const &, XML::Location const &) -> void
