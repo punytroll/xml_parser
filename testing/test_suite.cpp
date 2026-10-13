@@ -93,14 +93,20 @@ auto TestContent(std::string const & XMLString, std::string const & TestString) 
     
     auto XMLStream = std::stringstream{XMLString};
     auto Parser = ContentParser{XMLStream};
+    auto ParseResult = Parser.Parse();
     
-    Parser.Parse();
-    
-    auto ResultString = Parser.GetResult();
-    
-    if(ResultString != TestString)
+    if(ParseResult.has_value() == true)
     {
-        throw std::runtime_error{std::format("The XML string \"{}\" did not evaluate to the content test string:\n        Expected result: \"{}\"\n          Actual result: \"{}\"", XMLString, TestString, ResultString)};
+        auto ResultString = Parser.GetResult();
+        
+        if(ResultString != TestString)
+        {
+            throw std::runtime_error{std::format("Parsing the XML string \"{}\" did not evaluate to the content test string:\n        Expected result: \"{}\"\n          Actual result: \"{}\"", XMLString, TestString, ResultString)};
+        }
+    }
+    else
+    {
+        throw std::runtime_error{std::format("Parsing the XML string \"{}\" did not evaluate successfully:\n        Expected result: \"{}\"\n          Error in: {}:{}", XMLString, TestString, ParseResult.error().Location.Line, ParseResult.error().Location.Column)};
     }
     //~ std::cout << "<<<<" << std::endl;
 }
@@ -111,14 +117,20 @@ auto TestPosition(std::string const & XMLString, std::string const & TestString)
     
     auto XMLStream = std::stringstream{XMLString};
     auto Parser = PositionParser{XMLStream};
+    auto ParseResult = Parser.Parse();
     
-    Parser.Parse();
-    
-    auto ResultString = Parser.GetResult();
-    
-    if(ResultString != TestString)
+    if(ParseResult.has_value() == true)
     {
-        throw std::runtime_error{std::format("The XML string \"{}\" did not evaluate to the position test string:\n        Expected result: \"{}\"\n          Actual result: \"{}\"", XMLString, TestString, ResultString)};
+        auto ResultString = Parser.GetResult();
+        
+        if(ResultString != TestString)
+        {
+            throw std::runtime_error{std::format("Parsing the XML string \"{}\" did not evaluate to the position test string:\n        Expected result: \"{}\"\n          Actual result: \"{}\"", XMLString, TestString, ResultString)};
+        }
+    }
+    else
+    {
+        throw std::runtime_error{std::format("Parsing the XML string \"{}\" did not evaluate successfully:\n        Expected result: \"{}\"\n          Error in: {}:{}", XMLString, TestString, ParseResult.error().Location.Line, ParseResult.error().Location.Column)};
     }
     //~ std::cout << "<<<<" << std::endl;
 }

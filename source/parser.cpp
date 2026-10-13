@@ -76,7 +76,7 @@ XML::Parser::Parser(std::istream & InputStream) :
 {
 }
 
-auto XML::Parser::Parse() -> void
+auto XML::Parser::Parse() -> std::expected<void, XML::Error>
 {
     auto Attributes = std::map<std::string, std::string>{};
     auto AttributeName = std::string{};
@@ -87,11 +87,7 @@ auto XML::Parser::Parse() -> void
     auto Entity = std::string{};
     auto Character = '\0';
     auto ParsingStage = 0u;
-    auto CurrentLocation = XML::Location{};
-    
-    CurrentLocation.Column = 0;
-    CurrentLocation.Line = 0;
-    
+    auto CurrentLocation = XML::Location{0, 0};
     auto StartLocation = std::optional<XML::Location>{};
     
     while(m_InputStream.get(Character))
@@ -684,6 +680,8 @@ auto XML::Parser::Parse() -> void
             CurrentLocation.Column += 1;
         }
     }
+    
+    return {};
 }
 
 auto XML::Parser::Comment(std::string const &, XML::Location const &) -> void
