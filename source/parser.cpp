@@ -7,6 +7,7 @@
 #include <cassert>
 #include <iostream>
 #include <optional>
+#include <vector>
 
 #include <xml_parser/parser.h>
 
@@ -82,6 +83,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
     auto AttributeName = std::string{};
     auto AttributeValue = std::string{};
     auto Comment = std::string{};
+    auto ElementNameStack = std::vector<std::string>{};
     auto TagName = std::string{};
     auto Text = std::string{};
     auto Entity = std::string{};
@@ -547,9 +549,21 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ElementEnd(TagName);
-                    TagName.erase();
-                    ParsingStage = 0;
+                    auto StartedElementName = ElementNameStack.back();
+                    
+                    if(StartedElementName == TagName)
+                    {
+                        ElementNameStack.pop_back();
+                        ElementEnd(TagName);
+                        TagName.erase();
+                        StartLocation.reset();
+                        ParsingStage = 0;
+                    }
+                    else
+                    {
+                        assert(StartLocation.has_value() == true);
+                        Error.emplace(XML::ErrorCode::InvalidClosingElementName, StartLocation.value());
+                    }
                 }
                 else if(ParsingStage == 10)
                 {
@@ -568,6 +582,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 else if(ParsingStage == 12)
                 {
                     assert(StartLocation.has_value() == true);
+                    ElementNameStack.push_back(TagName);
                     ElementStart(TagName, Attributes, StartLocation.value());
                     TagName.erase();
                     Attributes.clear();
@@ -580,13 +595,26 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 14)
                 {
-                    ElementEnd(TagName);
-                    TagName.erase();
-                    ParsingStage = 0;
+                    auto StartedElementName = ElementNameStack.back();
+                    
+                    if(StartedElementName == TagName)
+                    {
+                        ElementNameStack.pop_back();
+                        ElementEnd(TagName);
+                        TagName.erase();
+                        StartLocation.reset();
+                        ParsingStage = 0;
+                    }
+                    else
+                    {
+                        assert(StartLocation.has_value() == true);
+                        Error.emplace(XML::ErrorCode::InvalidClosingElementName, StartLocation.value());
+                    }
                 }
                 else if(ParsingStage == 15)
                 {
                     assert(StartLocation.has_value() == true);
+                    ElementNameStack.push_back(TagName);
                     ElementStart(TagName, Attributes, StartLocation.value());
                     TagName.erase();
                     Attributes.clear();
@@ -636,7 +664,6 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    StartLocation.reset();
                     ParsingStage = 11;
                 }
                 else if(ParsingStage == 4)
