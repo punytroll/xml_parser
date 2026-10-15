@@ -89,9 +89,9 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
     auto ParsingStage = 0u;
     auto CurrentLocation = XML::Location{0, 0};
     auto StartLocation = std::optional<XML::Location>{};
-    auto ErrorLocation = std::optional<XML::Location>{};
+    auto Error = std::optional<XML::Error>{};
     
-    while((ErrorLocation.has_value() == false) && (m_InputStream.get(Character)))
+    while((Error.has_value() == false) && (m_InputStream.get(Character)))
     {
         //~ std::cout << std::boolalpha << "In stage " << ParsingStage << " got '"  << Character << "'. (Comment=\"" << Comment << "\"; TagName=\"" << TagName << "\"; Text=\"" << Text << "\"; AttributeName=\"" << AttributeName << "\"; AttributeValue=\"" << AttributeValue << "\"; Entity=\"" << Entity << "\"; CurrentLocation.Line=\"" << CurrentLocation.Line << "\"; CurrentLocation.Column=\"" << CurrentLocation.Column << "\"; ";
         //~ if(StartLocation.has_value() == true)
@@ -119,7 +119,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -139,11 +139,11 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
@@ -167,7 +167,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
@@ -175,7 +175,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -192,7 +192,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -206,19 +206,19 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 13)
                 {
@@ -226,11 +226,11 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
@@ -238,7 +238,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
@@ -246,7 +246,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
@@ -254,7 +254,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -271,7 +271,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -285,35 +285,35 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
@@ -332,7 +332,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
@@ -353,7 +353,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -367,35 +367,35 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
@@ -411,7 +411,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
@@ -422,7 +422,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -442,7 +442,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -456,59 +456,59 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 18)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -525,7 +525,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -563,7 +563,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
@@ -576,7 +576,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
@@ -595,31 +595,31 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 18)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -651,15 +651,15 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
@@ -667,11 +667,11 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
@@ -679,19 +679,19 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 18)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
@@ -716,7 +716,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -730,43 +730,43 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 18)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
@@ -774,7 +774,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
@@ -782,7 +782,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -799,7 +799,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -818,39 +818,39 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 18)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
@@ -860,7 +860,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     if(Entity.empty() == true)
                     {
-                        ErrorLocation = CurrentLocation;
+                        Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                     }
                     else
                     {
@@ -876,7 +876,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 {
                     if(Entity.empty() == true)
                     {
-                        ErrorLocation = CurrentLocation;
+                        Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                     }
                     else
                     {
@@ -913,43 +913,43 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 13)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 14)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 18)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
@@ -957,7 +957,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
@@ -965,7 +965,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -982,7 +982,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 1)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 2)
                 {
@@ -1006,15 +1006,15 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 10)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 12)
                 {
@@ -1030,7 +1030,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 15)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
@@ -1038,7 +1038,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 20)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 21)
                 {
@@ -1046,7 +1046,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 22)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 
                 break;
@@ -1068,7 +1068,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 2)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 4)
                 {
@@ -1092,7 +1092,7 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 11)
                 {
@@ -1118,15 +1118,15 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 16)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 17)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 18)
                 {
-                    ErrorLocation = CurrentLocation;
+                    Error.emplace(XML::ErrorCode::InvalidCharacter, CurrentLocation);
                 }
                 else if(ParsingStage == 19)
                 {
@@ -1158,9 +1158,9 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
             CurrentLocation.Column += 1;
         }
     }
-    if(ErrorLocation.has_value() == true)
+    if(Error.has_value() == true)
     {
-        return std::unexpected{XML::Error{ErrorLocation.value()}};
+        return std::unexpected{Error.value()};
     }
     else
     {

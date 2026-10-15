@@ -27,9 +27,16 @@ namespace XML
         std::uint64_t Line;
     };
     
+    enum class ErrorCode
+    {
+        InvalidCharacter,
+        InvalidClosingElementName
+    };
+    
     class Error
     {
     public:
+        XML::ErrorCode const Code;
         XML::Location const Location;
     };
     
@@ -50,5 +57,32 @@ namespace XML
         std::istream & m_InputStream;
     };
 }
+
+template<>
+struct std::formatter<XML::ErrorCode> : std::formatter<std::string_view>
+{
+    auto format(XML::ErrorCode Code, std::format_context & Context) const -> std::format_context::iterator
+    {
+        auto Result = std::string_view{};
+        
+        switch(Code)
+        {
+        case XML::ErrorCode::InvalidCharacter:
+            {
+                Result = "InvalidCharacter";
+                
+                break;
+            }
+        case XML::ErrorCode::InvalidClosingElementName:
+            {
+                Result = "InvalidClosingElementName";
+                
+                break;
+            }
+        }
+        
+        return std::formatter<std::string_view>::format(Result, Context);
+    }
+};
 
 #endif
