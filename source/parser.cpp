@@ -549,15 +549,23 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 9)
                 {
-                    auto StartedElementName = ElementNameStack.back();
-                    
-                    if(StartedElementName == TagName)
+                    if(ElementNameStack.empty() == false)
                     {
-                        ElementNameStack.pop_back();
-                        ElementEnd(TagName);
-                        TagName.erase();
-                        StartLocation.reset();
-                        ParsingStage = 0;
+                        auto StartedElementName = ElementNameStack.back();
+                        
+                        if(StartedElementName == TagName)
+                        {
+                            ElementNameStack.pop_back();
+                            ElementEnd(TagName);
+                            TagName.erase();
+                            StartLocation.reset();
+                            ParsingStage = 0;
+                        }
+                        else
+                        {
+                            assert(StartLocation.has_value() == true);
+                            Error.emplace(XML::ErrorCode::InvalidClosingElementName, StartLocation.value());
+                        }
                     }
                     else
                     {
@@ -595,15 +603,23 @@ auto XML::Parser::Parse() -> std::expected<void, XML::Error>
                 }
                 else if(ParsingStage == 14)
                 {
-                    auto StartedElementName = ElementNameStack.back();
-                    
-                    if(StartedElementName == TagName)
+                    if(ElementNameStack.empty() == false)
                     {
-                        ElementNameStack.pop_back();
-                        ElementEnd(TagName);
-                        TagName.erase();
-                        StartLocation.reset();
-                        ParsingStage = 0;
+                        auto StartedElementName = ElementNameStack.back();
+                        
+                        if(StartedElementName == TagName)
+                        {
+                            ElementNameStack.pop_back();
+                            ElementEnd(TagName);
+                            TagName.erase();
+                            StartLocation.reset();
+                            ParsingStage = 0;
+                        }
+                        else
+                        {
+                            assert(StartLocation.has_value() == true);
+                            Error.emplace(XML::ErrorCode::InvalidClosingElementName, StartLocation.value());
+                        }
                     }
                     else
                     {

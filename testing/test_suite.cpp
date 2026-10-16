@@ -391,7 +391,10 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char * argv[]) -> int
     TestError("<root attribute='H&!'></root>", XML::Location{0, 19}, XML::ErrorCode::InvalidCharacter);
     TestError("<root attribute='H&;'></root>", XML::Location{0, 19}, XML::ErrorCode::InvalidCharacter);
     TestError("<root attribute='H&&'></root>", XML::Location{0, 19}, XML::ErrorCode::InvalidCharacter);
-    TestError("<root></test>", XML::Location{0, 6}, XML::ErrorCode::InvalidClosingElementName);
+    // structure test
+    TestError("</root>", XML::Location{0, 0}, XML::ErrorCode::InvalidClosingElementName);
+    TestError("<root></test></root>", XML::Location{0, 6}, XML::ErrorCode::InvalidClosingElementName);
+    TestError("<root></root></test>", XML::Location{0, 13}, XML::ErrorCode::InvalidClosingElementName);
     TestError("<root><name1></name1><name2></name3></root>", XML::Location{0, 28}, XML::ErrorCode::InvalidClosingElementName);
     TestError("<root><name1></name1><name2></root>", XML::Location{0, 28}, XML::ErrorCode::InvalidClosingElementName);
 }
