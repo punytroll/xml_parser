@@ -14,7 +14,7 @@ xml_parser_library_include_directories = include_directories('include')
 
 xml_parser_library = library(
   'xml_parser',
-  sources: 'source/parser.cpp',
+  sources: 'source/xml_parser.cpp',
   include_directories: xml_parser_library_include_directories,
 )
 

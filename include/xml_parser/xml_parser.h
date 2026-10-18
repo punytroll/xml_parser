@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
 **/
 
-#ifndef XML_PARSER__PARSER_H
-#define XML_PARSER__PARSER_H
+#ifndef XML_PARSER__XML_PARSER_H
+#define XML_PARSER__XML_PARSER_H
 
 #include <cstdint>
 #include <expected>
