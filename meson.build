@@ -1,13 +1,12 @@
 project(
   'xml_parser',
   'cpp',
-  version: '26.10.1',
-  meson_version: '>=1.10.0',
-  default_options: [
-    'cpp_std=c++23',
-    'warning_level=3',
-    'werror=true'
-  ]
+  version: '26.10.2',
+  meson_version: '>=1.12.0',
+  default_options: {
+    'cpp_std': 'c++23',
+    'warning_level': '3',
+  },
 )
 
 xml_parser_library_include_directories = include_directories('include')

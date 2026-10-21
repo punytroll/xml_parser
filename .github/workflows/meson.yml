@@ -21,7 +21,7 @@ jobs:
       env:
         CC: gcc-14
         CXX: g++-14
-      run: meson setup build
+      run: meson setup build --werror
     - name: Compile project
       run: meson compile -C build
     - name: Run tests

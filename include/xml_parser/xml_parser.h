@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <expected>
+#include <format>
 #include <istream>
 #include <map>
 

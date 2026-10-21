@@ -9,7 +9,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <xml_parser/parser.h>
+#include <xml_parser/xml_parser.h>
 
 class ContentParser : public XML::Parser
 {
